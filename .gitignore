@@ -1,0 +1,17 @@
+# Compiled output
+bin/
+out/
+*.class
+
+# Eclipse workspace metadata (each person has their own)
+.metadata/
+*.launch
+
+# Local database settings (contains each person's MySQL password)
+config/db.properties
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
