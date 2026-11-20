@@ -1,7 +1,7 @@
 package com.hanapbahay;
 
 import com.hanapbahay.dao.UserDao;
-import com.hanapbahay.dao.sample.SampleUserDao;
+import com.hanapbahay.dao.mysql.MySqlUserDao;
 import com.hanapbahay.service.UserService;
 
 /**
@@ -18,9 +18,9 @@ import com.hanapbahay.service.UserService;
 public class AppContext {
 
 	// ---- Data layer: the variable type is the INTERFACE (Module 5, polymorphism) ----
-	// Right now this is a SAMPLE class (data in memory). When the Database member finishes
-	// MySqlUserDao, replace "new SampleUserDao()" with "new MySqlUserDao()".
-	private static UserDao userDao = new SampleUserDao();
+	// Users now come from the MySQL "users" table (XAMPP).
+	// To test without MySQL, change this back to: new SampleUserDao()
+	private static UserDao userDao = new MySqlUserDao();
 
 	// ---- Business layer (Backend member) ----
 	private static UserService userService = new UserService(userDao);

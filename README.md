@@ -14,7 +14,7 @@ Real Estate Listing, Inquiry, and Sales Monitoring System (Java Swing + MySQL, E
 
 | Week | Status | What was done |
 |---|---|---|
-| 1 | Done | Project structure, model classes, database schema, login backend, Login screen, main window with account dashboard |
+| 1 | Done | Project structure, model classes, database schema, login backend, Login screen, main window with account dashboard, **login reads from MySQL (XAMPP)** |
 | 2 | Next | Property listings: search, filter, add, update, delete |
 | 3 | Planned | Client Mode (browse, select units, exit with password) and the agent's inquiries list |
 | 4 | Planned | Sales recording and sales report |
@@ -36,15 +36,16 @@ Real Estate Listing, Inquiry, and Sales Monitoring System (Java Swing + MySQL, E
 
 ```
 UI (ui/)  ──calls──▶  Services (service/)  ──calls──▶  DAO interfaces (dao/)
-                                                          ├─ sample/  data in memory (works now)
-                                                          └─ MySQL classes (Database member)
+                                                          ├─ mysql/   real MySQL tables (XAMPP)  ← used now for users
+                                                          └─ sample/  data in memory (for testing without MySQL)
 ```
 
 - The UI **never** writes SQL. It only calls `AppContext.userService()` (more services are added each week).
 - Service methods return `true`/`false` (or `null` for login). The reason is in `getMessage()`, which the UI shows in a `JOptionPane`.
-- Until the MySQL classes are done, the app runs on **sample data** (`dao/sample/`), which resets every run.
+- Only the DAO classes in `dao/mysql/` contain SQL. They use `PreparedStatement` with `?` placeholders, which also blocks SQL injection.
+- `Main` checks the database at startup. If MySQL isn't running, it shows a message telling you to start it in XAMPP.
 
-Test logins (sample data): `admin / admin123`, `agent1 / agent123`, `agent2 / agent123`
+Test logins (from the `users` table): `admin / admin123`, `agent1 / agent123`, `agent2 / agent123`
 
 ## Week 1: where each OOP concept is used
 
@@ -62,13 +63,19 @@ Test logins (sample data): `admin / admin123`, `agent1 / agent123`, `agent2 / ag
 | Method overriding (`@Override`) | 4, 5 | `getRole()` and `getPermissions()` in `Admin` and `Agent`; `canViewAllSales()` in `Admin` |
 | Runtime polymorphism | 5 | After login, the Dashboard calls `user.getRole()`, `user.getPermissions()` and `user.canViewAllSales()`; Admin and Agent give different answers |
 | Abstract class and abstract method | 5 | `User` with `abstract String getRole()` and `abstract String getPermissions()` |
-| Interface (`implements`) | 5 | `UserDao`, `PropertyDao`, `InquiryDao`, `SaleDao`; `SampleUserDao implements UserDao` |
+| Interface (`implements`) | 5 | `UserDao`, `PropertyDao`, `InquiryDao`, `SaleDao`; both `MySqlUserDao` and `SampleUserDao` implement `UserDao`, and `UserService` works with either |
+| Exception handling (`try`/`catch`) | Project matrix | `DBConnection` and `MySqlUserDao` catch `SQLException`, so a database problem shows a message instead of crashing |
 
 ## First-time setup (each member)
 
 1. In Eclipse: **File → Import → Git → Projects from Git → Clone URI**, paste the GitHub repo URL, and finish the wizard.
-2. Run `src/com/hanapbahay/Main.java` (**Run As → Java Application**). The login screen should appear.
-3. When the team switches to MySQL: install MySQL (or XAMPP), run `db/schema.sql`, and set your MySQL user/password in `DBConnection.java`.
+2. Install **XAMPP**. Open the **XAMPP Control Panel** and click **Start** next to **Apache** and **MySQL**.
+3. Open **http://localhost/phpmyadmin** → **Import** → choose `db/schema.sql` → **Import**. The `hanapbahay` database appears.
+4. Run `src/com/hanapbahay/Main.java` (**Run As → Java Application**). The login screen should appear.
+
+The MySQL driver (`lib/mysql-connector-j-8.4.0.jar`) is already included. XAMPP's default login (`root`, no password)
+is already set in `DBConnection.java`; change it there only if your MySQL uses a password.
+**Start MySQL in XAMPP every time** before running the app.
 
 ## Daily workflow
 
@@ -76,9 +83,15 @@ Test logins (sample data): `admin / admin123`, `agent1 / agent123`, `agent2 / ag
 2. Work on your part and test it.
 3. **Commit** with a clear message (Team → Commit), then **Push**.
 
-## Database member: switching to MySQL
+## Database member: MySQL classes
 
-1. Add the MySQL Connector/J jar (see `lib/README.txt`).
-2. Create classes such as `dao/mysql/MySqlUserDao implements UserDao`, using `DBConnection.getConnection()`.
-   Read the `role` column to create the right object: `new Admin(...)` or `new Agent(...)`.
-3. In `AppContext.java`, replace `new SampleUserDao()` with `new MySqlUserDao()`.
+| Table | MySQL DAO | Status |
+|---|---|---|
+| `users` | `dao/mysql/MySqlUserDao` | Done (login uses it) |
+| `properties` | `MySqlPropertyDao` | Week 2 |
+| `inquiries` | `MySqlInquiryDao` | Week 3 |
+| `sales` | `MySqlSaleDao` | Week 4 |
+
+Each new MySQL DAO follows the same pattern as `MySqlUserDao`: get a connection from `DBConnection.getConnection()`,
+use a `PreparedStatement`, read rows with `ResultSet`, close the connection, and catch `SQLException`.
+Then switch it on in `AppContext.java`.

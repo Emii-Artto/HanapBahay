@@ -27,4 +27,19 @@ public class DBConnection {
 			return null;
 		}
 	}
+
+	// Returns true if MySQL is running and the "hanapbahay" database exists.
+	// Main calls this at startup so the user gets a clear message instead of failed logins.
+	public static boolean isAvailable() {
+		Connection conn = getConnection();
+		if (conn == null) {
+			return false;
+		}
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println("Cannot close the connection: " + e.getMessage());
+		}
+		return true;
+	}
 }
