@@ -1,72 +1,246 @@
 package com.hanapbahay.ui;
 
-import java.awt.Font;
-import java.util.List;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Property;
 import com.hanapbahay.model.User;
 
 /**
- * Main screen after login. Owner: UI member.
- * Placeholder: shows the current listings. Add menus/tabs for Listings, Inquiries and Sales here.
+ * The main window after login. Owner: UI member.
+ *
+ * Left: dark sidebar menu. Top: page title and role badge. Middle: the page area.
+ * Week 1: the Dashboard shows the logged-in user's account and what their role allows.
+ * The Listings, Inquiries and Sales pages are added to the menu as each module is finished.
  */
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private JLabel lblUserName;
+	private JLabel lblUserRole;
+	private JLabel lblRoleBadge;
 	private JLabel lblWelcome;
-	private JTable tblListings;
+	private JLabel lblUsernameValue;
+	private JLabel lblRoleValue;
+	private JLabel lblManageValue;
+	private JLabel lblSalesValue;
 
 	public MainFrame() {
 		setTitle("HanapBahay - Real Estate Listing, Inquiry, and Sales Monitoring");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 700, 450);
+		setBounds(100, 100, 1180, 700);
+		setResizable(false);
 		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBackground(Theme.PAGE_BG);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
+		// ================= SIDEBAR =================
+		JPanel pnlSidebar = new JPanel();
+		pnlSidebar.setBackground(Theme.SIDEBAR);
+		pnlSidebar.setBounds(0, 0, 230, 661);
+		contentPane.add(pnlSidebar);
+		pnlSidebar.setLayout(null);
+
+		JLabel lblBrand = new JLabel("HanapBahay");
+		lblBrand.setForeground(Color.WHITE);
+		lblBrand.setFont(Theme.TITLE);
+		lblBrand.setBounds(22, 25, 200, 32);
+		pnlSidebar.add(lblBrand);
+
+		JLabel lblBrandSub = new JLabel("REAL ESTATE MONITORING");
+		lblBrandSub.setForeground(Theme.ACCENT_LIGHT);
+		lblBrandSub.setFont(Theme.SMALL_BOLD);
+		lblBrandSub.setBounds(22, 57, 200, 18);
+		pnlSidebar.add(lblBrandSub);
+
+		JPanel pnlLine = new JPanel();
+		pnlLine.setBackground(new Color(45, 70, 65));
+		pnlLine.setBounds(22, 95, 186, 1);
+		pnlSidebar.add(pnlLine);
+
+		lblUserName = new JLabel("User name");
+		lblUserName.setForeground(Color.WHITE);
+		lblUserName.setFont(Theme.BODY_BOLD);
+		lblUserName.setBounds(22, 112, 200, 22);
+		pnlSidebar.add(lblUserName);
+
+		lblUserRole = new JLabel("ROLE");
+		lblUserRole.setForeground(Theme.ACCENT_LIGHT);
+		lblUserRole.setFont(Theme.SMALL_BOLD);
+		lblUserRole.setBounds(22, 134, 200, 18);
+		pnlSidebar.add(lblUserRole);
+
+		JLabel lblMenu = new JLabel("MAIN MENU");
+		lblMenu.setForeground(new Color(110, 135, 128));
+		lblMenu.setFont(Theme.SMALL_BOLD);
+		lblMenu.setBounds(22, 180, 200, 18);
+		pnlSidebar.add(lblMenu);
+
+		JButton btnNavDashboard = new JButton("Dashboard");
+		btnNavDashboard.setHorizontalAlignment(SwingConstants.LEFT);
+		btnNavDashboard.setFont(Theme.BODY_BOLD);
+		btnNavDashboard.setForeground(Color.WHITE);
+		btnNavDashboard.setBackground(Theme.ACCENT);
+		btnNavDashboard.setBorder(new EmptyBorder(0, 18, 0, 0));
+		btnNavDashboard.setFocusPainted(false);
+		btnNavDashboard.setBounds(10, 205, 210, 40);
+		pnlSidebar.add(btnNavDashboard);
+
+		JButton btnLogout = new JButton("Log out");
+		btnLogout.setFont(Theme.BODY_BOLD);
+		btnLogout.setForeground(Color.WHITE);
+		btnLogout.setBackground(new Color(45, 70, 65));
+		btnLogout.setBorder(new EmptyBorder(0, 0, 0, 0));
+		btnLogout.setFocusPainted(false);
+		btnLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				doLogout();
+			}
+		});
+		btnLogout.setBounds(10, 605, 210, 40);
+		pnlSidebar.add(btnLogout);
+
+		// ================= HEADER =================
+		JPanel pnlHeader = new JPanel();
+		pnlHeader.setBackground(Color.WHITE);
+		pnlHeader.setBorder(new MatteBorder(0, 0, 1, 0, Theme.BORDER)); // line at the bottom only
+		pnlHeader.setBounds(230, 0, 934, 80);
+		contentPane.add(pnlHeader);
+		pnlHeader.setLayout(null);
+
+		JLabel lblPageTitle = new JLabel("Dashboard");
+		lblPageTitle.setForeground(Theme.TEXT);
+		lblPageTitle.setFont(Theme.TITLE);
+		lblPageTitle.setBounds(25, 12, 600, 32);
+		pnlHeader.add(lblPageTitle);
+
+		JLabel lblPageSubtitle = new JLabel("Your account and what your role can do");
+		lblPageSubtitle.setForeground(Theme.TEXT_MUTED);
+		lblPageSubtitle.setFont(Theme.SMALL);
+		lblPageSubtitle.setBounds(25, 45, 600, 20);
+		pnlHeader.add(lblPageSubtitle);
+
+		lblRoleBadge = new JLabel("ROLE");
+		lblRoleBadge.setOpaque(true);
+		lblRoleBadge.setHorizontalAlignment(SwingConstants.CENTER);
+		lblRoleBadge.setForeground(Color.WHITE);
+		lblRoleBadge.setBackground(Theme.ACCENT);
+		lblRoleBadge.setFont(Theme.SMALL_BOLD);
+		lblRoleBadge.setBounds(809, 23, 100, 34);
+		pnlHeader.add(lblRoleBadge);
+
+		// ================= PAGE AREA: account card =================
+		JPanel pnlAccount = new JPanel();
+		pnlAccount.setBackground(Color.WHITE);
+		pnlAccount.setBorder(new LineBorder(Theme.BORDER));
+		pnlAccount.setBounds(255, 100, 520, 250);
+		contentPane.add(pnlAccount);
+		pnlAccount.setLayout(null);
+
+		JPanel pnlBar = new JPanel();
+		pnlBar.setBackground(Theme.ACCENT);
+		pnlBar.setBounds(0, 0, 4, 250);
+		pnlAccount.add(pnlBar);
+
 		lblWelcome = new JLabel("Welcome!");
-		lblWelcome.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblWelcome.setBounds(15, 10, 655, 30);
-		contentPane.add(lblWelcome);
+		lblWelcome.setForeground(Theme.TEXT);
+		lblWelcome.setFont(Theme.HEADING);
+		lblWelcome.setBounds(25, 20, 480, 28);
+		pnlAccount.add(lblWelcome);
 
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(15, 50, 655, 340);
-		contentPane.add(scrollPane);
+		JLabel lblUsername = new JLabel("Username");
+		lblUsername.setForeground(Theme.TEXT_MUTED);
+		lblUsername.setFont(Theme.BODY);
+		lblUsername.setBounds(25, 70, 200, 24);
+		pnlAccount.add(lblUsername);
 
-		tblListings = new JTable();
-		tblListings.setModel(new DefaultTableModel(
-			new Object[][] {},
-			new String[] { "ID", "Title", "Location", "Type", "Price", "Status" }
-		));
-		scrollPane.setViewportView(tblListings);
+		lblUsernameValue = new JLabel("-");
+		lblUsernameValue.setForeground(Theme.TEXT);
+		lblUsernameValue.setFont(Theme.BODY_BOLD);
+		lblUsernameValue.setBounds(240, 70, 260, 24);
+		pnlAccount.add(lblUsernameValue);
+
+		JLabel lblRole = new JLabel("Role");
+		lblRole.setForeground(Theme.TEXT_MUTED);
+		lblRole.setFont(Theme.BODY);
+		lblRole.setBounds(25, 110, 200, 24);
+		pnlAccount.add(lblRole);
+
+		lblRoleValue = new JLabel("-");
+		lblRoleValue.setForeground(Theme.TEXT);
+		lblRoleValue.setFont(Theme.BODY_BOLD);
+		lblRoleValue.setBounds(240, 110, 260, 24);
+		pnlAccount.add(lblRoleValue);
+
+		JLabel lblManage = new JLabel("Can manage listings");
+		lblManage.setForeground(Theme.TEXT_MUTED);
+		lblManage.setFont(Theme.BODY);
+		lblManage.setBounds(25, 150, 200, 24);
+		pnlAccount.add(lblManage);
+
+		lblManageValue = new JLabel("-");
+		lblManageValue.setForeground(Theme.TEXT);
+		lblManageValue.setFont(Theme.BODY_BOLD);
+		lblManageValue.setBounds(240, 150, 260, 24);
+		pnlAccount.add(lblManageValue);
+
+		JLabel lblSales = new JLabel("Can view all sales");
+		lblSales.setForeground(Theme.TEXT_MUTED);
+		lblSales.setFont(Theme.BODY);
+		lblSales.setBounds(25, 190, 200, 24);
+		pnlAccount.add(lblSales);
+
+		lblSalesValue = new JLabel("-");
+		lblSalesValue.setForeground(Theme.TEXT);
+		lblSalesValue.setFont(Theme.BODY_BOLD);
+		lblSalesValue.setBounds(240, 190, 260, 24);
+		pnlAccount.add(lblSalesValue);
 	}
 
 	/** Called after a successful login. Kept out of the constructor so WindowBuilder can open this file. */
 	public void showFor(User user) {
-		lblWelcome.setText("Welcome, " + user.getFullName() + " (" + user.getRole() + ")");
-		loadListings();
+		lblUserName.setText(user.getFullName());
+		lblUserRole.setText(user.getRole());
+		lblRoleBadge.setText(user.getRole());
+
+		// POLYMORPHISM: each method runs the Admin, Agent or Client version
+		lblWelcome.setText(user.getWelcomeMessage());
+		lblUsernameValue.setText(user.getUsername());
+		lblRoleValue.setText(user.getRole());
+		lblManageValue.setText(yesOrNo(user.canManageListings()));
+		lblSalesValue.setText(yesOrNo(user.canViewAllSales()));
+
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 
-	private void loadListings() {
-		DefaultTableModel model = (DefaultTableModel) tblListings.getModel();
-		model.setRowCount(0);
-		List<Property> listings = AppContext.propertyService().getAllListings();
-		for (Property p : listings) {
-			model.addRow(new Object[] { p.getPropertyId(), p.getTitle(), p.getLocation(),
-					p.getType(), p.getPrice(), p.getStatus() });
+	private String yesOrNo(boolean value) {
+		if (value) {
+			return "Yes";
+		} else {
+			return "No";
+		}
+	}
+
+	private void doLogout() {
+		int answer = JOptionPane.showConfirmDialog(this, "Do you want to log out?", "Log out",
+				JOptionPane.YES_NO_OPTION);
+		if (answer == JOptionPane.YES_OPTION) {
+			LoginFrame login = new LoginFrame();
+			login.setVisible(true);
+			dispose();
 		}
 	}
 }

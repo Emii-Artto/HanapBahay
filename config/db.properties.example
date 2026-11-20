@@ -1,5 +1,0 @@
-# Copy this file to "db.properties" (same folder) and fill in YOUR local MySQL settings.
-# db.properties is ignored by Git, so your password never gets pushed to GitHub.
-db.url=jdbc:mysql://localhost:3306/hanapbahay
-db.user=root
-db.password=

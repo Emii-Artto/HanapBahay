@@ -1,16 +1,13 @@
 package com.hanapbahay.dao;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import com.hanapbahay.model.Sale;
 
-/** Contract between Backend and Database. Database member implements this with MySQL. */
+/** INTERFACE (Module 5) - what can be done with sales records. */
 public interface SaleDao {
 
-	List<Sale> findAll();
+	ArrayList<Sale> findAll();
 
-	List<Sale> findByAgent(int agentId);
-
-	/** Saves a new sale and returns it with its generated saleId. */
-	Sale insert(Sale sale);
+	void add(Sale sale);
 }

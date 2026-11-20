@@ -1,47 +1,72 @@
 package com.hanapbahay.model;
 
-import java.time.LocalDateTime;
-
-/** Shared model: a client's inquiry about a property. Matches the "inquiries" table. */
+/**
+ * A client's question about a property. Matches the "inquiries" table.
+ * ENCAPSULATION (Module 4) - private fields with getters and setters.
+ */
 public class Inquiry {
 
-	public enum Status { NEW, RESPONDED, CLOSED }
+	public static final String NEW = "NEW";
+	public static final String RESPONDED = "RESPONDED";
+	public static final String CLOSED = "CLOSED";
 
 	private int inquiryId;
 	private int propertyId;
 	private int clientId;
 	private String message;
-	private Status status = Status.NEW;
-	private LocalDateTime createdAt;
+	private String status;
 
-	public Inquiry() {
-	}
-
-	public Inquiry(int inquiryId, int propertyId, int clientId, String message,
-			Status status, LocalDateTime createdAt) {
+	public Inquiry(int inquiryId, int propertyId, int clientId, String message, String status) {
 		this.inquiryId = inquiryId;
 		this.propertyId = propertyId;
 		this.clientId = clientId;
 		this.message = message;
 		this.status = status;
-		this.createdAt = createdAt;
 	}
 
-	public int getInquiryId() { return inquiryId; }
-	public void setInquiryId(int inquiryId) { this.inquiryId = inquiryId; }
+	// Shorter constructor for a NEW inquiry (constructor chaining with this(...))
+	public Inquiry(int propertyId, int clientId, String message) {
+		this(0, propertyId, clientId, message, NEW);
+	}
 
-	public int getPropertyId() { return propertyId; }
-	public void setPropertyId(int propertyId) { this.propertyId = propertyId; }
+	// ---- Getters and setters ----
+	public int getInquiryId() {
+		return inquiryId;
+	}
 
-	public int getClientId() { return clientId; }
-	public void setClientId(int clientId) { this.clientId = clientId; }
+	public void setInquiryId(int inquiryId) {
+		this.inquiryId = inquiryId;
+	}
 
-	public String getMessage() { return message; }
-	public void setMessage(String message) { this.message = message; }
+	public int getPropertyId() {
+		return propertyId;
+	}
 
-	public Status getStatus() { return status; }
-	public void setStatus(Status status) { this.status = status; }
+	public void setPropertyId(int propertyId) {
+		this.propertyId = propertyId;
+	}
 
-	public LocalDateTime getCreatedAt() { return createdAt; }
-	public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+	public int getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(int clientId) {
+		this.clientId = clientId;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }
