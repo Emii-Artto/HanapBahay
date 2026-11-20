@@ -1,16 +1,13 @@
 package com.hanapbahay.service;
 
 import com.hanapbahay.dao.UserDao;
-import com.hanapbahay.model.Client;
 import com.hanapbahay.model.User;
 
 /**
- * Backend: login and registration rules. Owner: Backend member.
+ * Backend: login rules. Owner: Backend member.
+ * Only Admins and Agents log in. Clients use Client Mode on the agent's device instead.
  */
 public class UserService extends BaseService {
-
-	// STATIC FINAL constant (Module 4) - one value shared by the class, cannot be changed
-	public static final int MIN_PASSWORD_LENGTH = 6;
 
 	// The service talks to the INTERFACE, so it works with sample data or MySQL (Module 5)
 	private UserDao userDao;
@@ -33,31 +30,7 @@ public class UserService extends BaseService {
 			return null;
 		}
 
-		message = user.getWelcomeMessage(); // runs Admin's, Agent's or Client's getRole() (polymorphism)
+		message = user.getWelcomeMessage(); // runs Admin's or Agent's getRole() (polymorphism)
 		return user;
-	}
-
-	/** Creates a new Client account. Returns true if it worked. (The Register screen comes next week.) */
-	public boolean register(String username, String password, String confirmPassword, String fullName) {
-		if (isBlank(username) || isBlank(password) || isBlank(fullName)) {
-			message = "All fields are required.";
-			return false;
-		}
-		if (password.length() < MIN_PASSWORD_LENGTH) {
-			message = "Password must be at least " + MIN_PASSWORD_LENGTH + " characters.";
-			return false;
-		}
-		if (!password.equals(confirmPassword)) {
-			message = "Passwords do not match.";
-			return false;
-		}
-		if (userDao.findByUsername(username.trim()) != null) {
-			message = "Username is already taken.";
-			return false;
-		}
-
-		userDao.add(new Client(0, username.trim(), password, fullName.trim()));
-		message = "Account created. You can now log in.";
-		return true;
 	}
 }

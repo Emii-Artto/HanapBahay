@@ -2,7 +2,7 @@ package com.hanapbahay.model;
 
 /**
  * INHERITANCE (Module 4) - an Admin IS-A User.
- * Admins manage the whole system: listings, agents and sales reports.
+ * Admins manage the whole system: agent accounts, all listings and all sales reports.
  */
 public class Admin extends User {
 
@@ -16,8 +16,8 @@ public class Admin extends User {
 	}
 
 	@Override
-	public boolean canManageListings() {
-		return true;
+	public String getPermissions() {
+		return "Manage agent accounts, all listings, and all sales reports";
 	}
 
 	@Override

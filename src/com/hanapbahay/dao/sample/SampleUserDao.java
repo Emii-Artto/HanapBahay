@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.hanapbahay.dao.UserDao;
 import com.hanapbahay.model.Admin;
 import com.hanapbahay.model.Agent;
-import com.hanapbahay.model.Client;
 import com.hanapbahay.model.User;
 
 /**
@@ -20,10 +19,10 @@ public class SampleUserDao implements UserDao {
 	private int nextId = 1;
 
 	public SampleUserDao() {
-		// POLYMORPHISM (Module 5): the list holds User, but each item is an Admin, Agent or Client
+		// POLYMORPHISM (Module 5): the list holds User, but each item is an Admin or an Agent
 		add(new Admin(0, "admin", "admin123", "System Admin"));
 		add(new Agent(0, "agent1", "agent123", "Maria Santos"));
-		add(new Client(0, "client1", "client123", "Juan Dela Cruz"));
+		add(new Agent(0, "agent2", "agent123", "Paolo Reyes"));
 	}
 
 	@Override

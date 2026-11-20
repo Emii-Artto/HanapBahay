@@ -1,8 +1,9 @@
 package com.hanapbahay.model;
 
 /**
- * ABSTRACT CLASS (Module 5) - the general idea of a user of the system.
- * We never create a plain "User"; we create an Admin, Agent or Client.
+ * ABSTRACT CLASS (Module 5) - the general idea of a user who can log in.
+ * We never create a plain "User"; we create an Admin or an Agent.
+ * (Clients don't log in. An agent opens Client Mode and hands the device to the client.)
  *
  * ENCAPSULATION (Module 4) - all fields are private, accessed through getters and setters.
  */
@@ -21,15 +22,13 @@ public abstract class User {
 		this.fullName = fullName;
 	}
 
-	// ABSTRACT METHOD - every subclass MUST say what its role is
+	// ABSTRACT METHODS - every subclass MUST give its own version
 	public abstract String getRole();
 
-	// CONCRETE METHOD - subclasses inherit it; Admin and Agent override it (runtime polymorphism)
-	public boolean canManageListings() {
-		return false;
-	}
+	public abstract String getPermissions();
 
-	// Only Admin overrides this to true: an Admin sees ALL sales, an Agent sees only their own.
+	// CONCRETE METHOD - subclasses inherit it. Only Admin overrides it to true:
+	// an Admin sees ALL sales, an Agent sees only their own.
 	public boolean canViewAllSales() {
 		return false;
 	}

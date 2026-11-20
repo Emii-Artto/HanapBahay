@@ -2,21 +2,26 @@ package com.hanapbahay.model;
 
 /**
  * A completed property sale. Matches the "sales" table.
+ * The buyer has no account, so we keep the buyer's name and contact number.
+ *
  * ENCAPSULATION (Module 4) - private fields with getters and setters.
  */
 public class Sale {
 
 	private int saleId;
 	private int propertyId;
-	private int clientId;
+	private String buyerName;
+	private String buyerContact;
 	private int agentId;
 	private double salePrice;
 	private String saleDate; // format: yyyy-mm-dd, e.g. "2026-11-20"
 
-	public Sale(int saleId, int propertyId, int clientId, int agentId, double salePrice, String saleDate) {
+	public Sale(int saleId, int propertyId, String buyerName, String buyerContact, int agentId,
+			double salePrice, String saleDate) {
 		this.saleId = saleId;
 		this.propertyId = propertyId;
-		this.clientId = clientId;
+		this.buyerName = buyerName;
+		this.buyerContact = buyerContact;
 		this.agentId = agentId;
 		this.salePrice = salePrice;
 		this.saleDate = saleDate;
@@ -39,12 +44,20 @@ public class Sale {
 		this.propertyId = propertyId;
 	}
 
-	public int getClientId() {
-		return clientId;
+	public String getBuyerName() {
+		return buyerName;
 	}
 
-	public void setClientId(int clientId) {
-		this.clientId = clientId;
+	public void setBuyerName(String buyerName) {
+		this.buyerName = buyerName;
+	}
+
+	public String getBuyerContact() {
+		return buyerContact;
+	}
+
+	public void setBuyerContact(String buyerContact) {
+		this.buyerContact = buyerContact;
 	}
 
 	public int getAgentId() {

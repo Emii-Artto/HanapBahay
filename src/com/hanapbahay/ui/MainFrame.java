@@ -39,8 +39,8 @@ public class MainFrame extends JFrame {
 	private JLabel lblWelcome;
 	private JLabel lblUsernameValue;
 	private JLabel lblRoleValue;
-	private JLabel lblManageValue;
 	private JLabel lblSalesValue;
+	private JLabel lblPermissionsValue;
 
 	public MainFrame() {
 		setTitle("HanapBahay - Real Estate Listing, Inquiry, and Sales Monitoring");
@@ -196,29 +196,30 @@ public class MainFrame extends JFrame {
 		lblRoleValue.setBounds(240, 110, 260, 24);
 		pnlAccount.add(lblRoleValue);
 
-		JLabel lblManage = new JLabel("Can manage listings");
-		lblManage.setForeground(Theme.TEXT_MUTED);
-		lblManage.setFont(Theme.BODY);
-		lblManage.setBounds(25, 150, 200, 24);
-		pnlAccount.add(lblManage);
-
-		lblManageValue = new JLabel("-");
-		lblManageValue.setForeground(Theme.TEXT);
-		lblManageValue.setFont(Theme.BODY_BOLD);
-		lblManageValue.setBounds(240, 150, 260, 24);
-		pnlAccount.add(lblManageValue);
-
 		JLabel lblSales = new JLabel("Can view all sales");
 		lblSales.setForeground(Theme.TEXT_MUTED);
 		lblSales.setFont(Theme.BODY);
-		lblSales.setBounds(25, 190, 200, 24);
+		lblSales.setBounds(25, 150, 200, 24);
 		pnlAccount.add(lblSales);
 
 		lblSalesValue = new JLabel("-");
 		lblSalesValue.setForeground(Theme.TEXT);
 		lblSalesValue.setFont(Theme.BODY_BOLD);
-		lblSalesValue.setBounds(240, 190, 260, 24);
+		lblSalesValue.setBounds(240, 150, 260, 24);
 		pnlAccount.add(lblSalesValue);
+
+		JLabel lblPermissions = new JLabel("Permissions");
+		lblPermissions.setForeground(Theme.TEXT_MUTED);
+		lblPermissions.setFont(Theme.BODY);
+		lblPermissions.setBounds(25, 190, 200, 24);
+		pnlAccount.add(lblPermissions);
+
+		lblPermissionsValue = new JLabel("-");
+		lblPermissionsValue.setVerticalAlignment(SwingConstants.TOP);
+		lblPermissionsValue.setForeground(Theme.TEXT);
+		lblPermissionsValue.setFont(Theme.BODY_BOLD);
+		lblPermissionsValue.setBounds(240, 193, 260, 40);
+		pnlAccount.add(lblPermissionsValue);
 	}
 
 	/** Called after a successful login. Kept out of the constructor so WindowBuilder can open this file. */
@@ -227,12 +228,12 @@ public class MainFrame extends JFrame {
 		lblUserRole.setText(user.getRole());
 		lblRoleBadge.setText(user.getRole());
 
-		// POLYMORPHISM: each method runs the Admin, Agent or Client version
+		// POLYMORPHISM: each method runs the Admin or Agent version
 		lblWelcome.setText(user.getWelcomeMessage());
 		lblUsernameValue.setText(user.getUsername());
 		lblRoleValue.setText(user.getRole());
-		lblManageValue.setText(yesOrNo(user.canManageListings()));
 		lblSalesValue.setText(yesOrNo(user.canViewAllSales()));
+		lblPermissionsValue.setText("<html>" + user.getPermissions() + "</html>"); // <html> lets long text wrap
 
 		setLocationRelativeTo(null);
 		setVisible(true);

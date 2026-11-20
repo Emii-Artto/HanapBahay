@@ -21,7 +21,8 @@ import com.hanapbahay.model.User;
  * Login screen. Owner: UI member.
  * Open with WindowBuilder: right-click > Open With > WindowBuilder Editor, then the Design tab.
  *
- * Test accounts (sample data): admin / admin123, agent1 / agent123, client1 / client123
+ * Test accounts (sample data): admin / admin123, agent1 / agent123, agent2 / agent123
+ * Only Admins and Agents log in. Clients use Client Mode on the agent's device.
  */
 public class LoginFrame extends JFrame {
 

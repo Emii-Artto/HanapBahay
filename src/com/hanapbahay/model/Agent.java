@@ -2,7 +2,8 @@ package com.hanapbahay.model;
 
 /**
  * INHERITANCE (Module 4) - an Agent IS-A User.
- * Agents post property listings, answer inquiries and record sales.
+ * Agents post listings, open Client Mode for walk-in clients, answer inquiries and record sales.
+ * Agents keep the inherited canViewAllSales() which returns false: they see only their own sales.
  */
 public class Agent extends User {
 
@@ -16,7 +17,7 @@ public class Agent extends User {
 	}
 
 	@Override
-	public boolean canManageListings() {
-		return true;
+	public String getPermissions() {
+		return "Manage own listings, open Client Mode, and record own sales";
 	}
 }
