@@ -1,44 +1,30 @@
 package com.hanapbahay.dao;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
- * Opens MySQL connections using config/db.properties (each person's own local settings).
- * Owner: Database member.
+ * Opens a connection to the MySQL database. Owner: Database member.
  *
- * Usage inside a MySQL DAO:
- *   try (Connection conn = DBConnection.getConnection();
- *        PreparedStatement ps = conn.prepareStatement("SELECT ...")) { ... }
+ * Change USER and PASSWORD to match the MySQL on your computer
+ * (XAMPP default: user "root", empty password).
  */
-public final class DBConnection {
+public class DBConnection {
 
-	private static final String CONFIG_FILE = "config/db.properties";
+	// STATIC FINAL constants (Modules 3 and 4) - same for the whole program, cannot be changed
+	public static final String URL = "jdbc:mysql://localhost:3306/hanapbahay";
+	public static final String USER = "root";
+	public static final String PASSWORD = "";
 
-	private DBConnection() {
-	}
-
-	public static Connection getConnection() throws SQLException {
-		Properties props = loadConfig();
-		return DriverManager.getConnection(
-				props.getProperty("db.url"),
-				props.getProperty("db.user"),
-				props.getProperty("db.password", ""));
-	}
-
-	private static Properties loadConfig() throws SQLException {
-		Properties props = new Properties();
-		try (InputStream in = new FileInputStream(CONFIG_FILE)) {
-			props.load(in);
-		} catch (IOException e) {
-			throw new SQLException("Missing " + CONFIG_FILE
-					+ ". Copy config/db.properties.example to config/db.properties and fill it in.", e);
+	// STATIC METHOD (Module 3) - call it with DBConnection.getConnection(), no object needed.
+	// Returns null if the database cannot be reached.
+	public static Connection getConnection() {
+		try {
+			return DriverManager.getConnection(URL, USER, PASSWORD);
+		} catch (SQLException e) {
+			System.out.println("Cannot connect to the database: " + e.getMessage());
+			return null;
 		}
-		return props;
 	}
 }

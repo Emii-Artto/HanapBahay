@@ -1,21 +1,17 @@
 package com.hanapbahay.dao;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.ArrayList;
 
 import com.hanapbahay.model.Inquiry;
 
-/** Contract between Backend and Database. Database member implements this with MySQL. */
+/** INTERFACE (Module 5) - what can be done with inquiries. */
 public interface InquiryDao {
 
-	Optional<Inquiry> findById(int inquiryId);
+	Inquiry findById(int inquiryId); // returns null if not found
 
-	List<Inquiry> findAll();
+	ArrayList<Inquiry> findAll();
 
-	List<Inquiry> findByProperty(int propertyId);
+	void add(Inquiry inquiry);
 
-	/** Saves a new inquiry and returns it with its generated inquiryId. */
-	Inquiry insert(Inquiry inquiry);
-
-	void updateStatus(int inquiryId, Inquiry.Status status);
+	void update(Inquiry inquiry);
 }

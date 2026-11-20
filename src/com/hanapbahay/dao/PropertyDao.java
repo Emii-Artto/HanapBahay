@@ -1,21 +1,17 @@
 package com.hanapbahay.dao;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.ArrayList;
 
 import com.hanapbahay.model.Property;
 
-/** Contract between Backend and Database. Database member implements this with MySQL. */
+/** INTERFACE (Module 5) - what can be done with property listings. */
 public interface PropertyDao {
 
-	Optional<Property> findById(int propertyId);
+	Property findById(int propertyId); // returns null if not found
 
-	List<Property> findAll();
+	ArrayList<Property> findAll();
 
-	List<Property> findByStatus(Property.Status status);
-
-	/** Saves a new listing and returns it with its generated propertyId. */
-	Property insert(Property property);
+	void add(Property property);
 
 	void update(Property property);
 

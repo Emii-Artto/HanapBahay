@@ -7,9 +7,6 @@ out/
 .metadata/
 *.launch
 
-# Local database settings (contains each person's MySQL password)
-config/db.properties
-
 # OS / editor junk
 .DS_Store
 Thumbs.db

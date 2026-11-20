@@ -1,19 +1,21 @@
 package com.hanapbahay.dao;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.ArrayList;
 
 import com.hanapbahay.model.User;
 
-/** Contract between Backend and Database. Database member implements this with MySQL. */
+/**
+ * INTERFACE (Module 5, full abstraction) - says WHAT can be done with users, not HOW.
+ * SampleUserDao does it with sample data in memory; the Database member's MySQL class
+ * will do it with real tables. The backend works with either one.
+ */
 public interface UserDao {
 
-	Optional<User> findByUsername(String username);
+	User findByUsername(String username); // returns null if not found
 
-	Optional<User> findById(int userId);
+	User findById(int userId); // returns null if not found
 
-	List<User> findAll();
+	ArrayList<User> findAll();
 
-	/** Saves a new user and returns it with its generated userId. */
-	User insert(User user);
+	void add(User user);
 }

@@ -1,7 +1,5 @@
 package com.hanapbahay;
 
-import java.awt.EventQueue;
-
 import com.hanapbahay.ui.LoginFrame;
 
 /**
@@ -10,6 +8,7 @@ import com.hanapbahay.ui.LoginFrame;
 public class Main {
 
 	public static void main(String[] args) {
-		EventQueue.invokeLater(() -> new LoginFrame().setVisible(true));
+		LoginFrame login = new LoginFrame(); // create an object of the LoginFrame class
+		login.setVisible(true);              // show the window
 	}
 }

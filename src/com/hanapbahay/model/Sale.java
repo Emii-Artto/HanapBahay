@@ -1,23 +1,19 @@
 package com.hanapbahay.model;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-/** Shared model: a completed property sale. Matches the "sales" table. */
+/**
+ * A completed property sale. Matches the "sales" table.
+ * ENCAPSULATION (Module 4) - private fields with getters and setters.
+ */
 public class Sale {
 
 	private int saleId;
 	private int propertyId;
 	private int clientId;
 	private int agentId;
-	private BigDecimal salePrice;
-	private LocalDate saleDate;
+	private double salePrice;
+	private String saleDate; // format: yyyy-mm-dd, e.g. "2026-11-20"
 
-	public Sale() {
-	}
-
-	public Sale(int saleId, int propertyId, int clientId, int agentId,
-			BigDecimal salePrice, LocalDate saleDate) {
+	public Sale(int saleId, int propertyId, int clientId, int agentId, double salePrice, String saleDate) {
 		this.saleId = saleId;
 		this.propertyId = propertyId;
 		this.clientId = clientId;
@@ -26,21 +22,52 @@ public class Sale {
 		this.saleDate = saleDate;
 	}
 
-	public int getSaleId() { return saleId; }
-	public void setSaleId(int saleId) { this.saleId = saleId; }
+	// ---- Getters and setters ----
+	public int getSaleId() {
+		return saleId;
+	}
 
-	public int getPropertyId() { return propertyId; }
-	public void setPropertyId(int propertyId) { this.propertyId = propertyId; }
+	public void setSaleId(int saleId) {
+		this.saleId = saleId;
+	}
 
-	public int getClientId() { return clientId; }
-	public void setClientId(int clientId) { this.clientId = clientId; }
+	public int getPropertyId() {
+		return propertyId;
+	}
 
-	public int getAgentId() { return agentId; }
-	public void setAgentId(int agentId) { this.agentId = agentId; }
+	public void setPropertyId(int propertyId) {
+		this.propertyId = propertyId;
+	}
 
-	public BigDecimal getSalePrice() { return salePrice; }
-	public void setSalePrice(BigDecimal salePrice) { this.salePrice = salePrice; }
+	public int getClientId() {
+		return clientId;
+	}
 
-	public LocalDate getSaleDate() { return saleDate; }
-	public void setSaleDate(LocalDate saleDate) { this.saleDate = saleDate; }
+	public void setClientId(int clientId) {
+		this.clientId = clientId;
+	}
+
+	public int getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(int agentId) {
+		this.agentId = agentId;
+	}
+
+	public double getSalePrice() {
+		return salePrice;
+	}
+
+	public void setSalePrice(double salePrice) {
+		this.salePrice = salePrice;
+	}
+
+	public String getSaleDate() {
+		return saleDate;
+	}
+
+	public void setSaleDate(String saleDate) {
+		this.saleDate = saleDate;
+	}
 }
