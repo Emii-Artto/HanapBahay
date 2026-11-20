@@ -1,8 +1,11 @@
 package com.hanapbahay.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,6 +30,9 @@ public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private JPanel pnlSidebar;
+	private JPanel pnlHeader;
+	private JButton btnLogout;
 	private JLabel lblUserName;
 	private JLabel lblUserRole;
 	private JLabel lblRoleBadge;
@@ -40,14 +46,20 @@ public class MainFrame extends JFrame {
 		setTitle("HanapBahay - Real Estate Listing, Inquiry, and Sales Monitoring");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1180, 700);
-		setResizable(false);
+		setMinimumSize(new Dimension(1000, 650)); // can be maximized, but not made too small
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				fitToWindow(); // runs every time the window is resized or maximized
+			}
+		});
 		contentPane = new JPanel();
 		contentPane.setBackground(Theme.PAGE_BG);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
 		// ================= SIDEBAR =================
-		JPanel pnlSidebar = new JPanel();
+		pnlSidebar = new JPanel();
 		pnlSidebar.setBackground(Theme.SIDEBAR);
 		pnlSidebar.setBounds(0, 0, 230, 661);
 		contentPane.add(pnlSidebar);
@@ -98,7 +110,7 @@ public class MainFrame extends JFrame {
 		btnNavDashboard.setBounds(10, 205, 210, 40);
 		pnlSidebar.add(btnNavDashboard);
 
-		JButton btnLogout = new JButton("Log out");
+		btnLogout = new JButton("Log out");
 		btnLogout.setFont(Theme.BODY_BOLD);
 		btnLogout.setForeground(Color.WHITE);
 		btnLogout.setBackground(new Color(45, 70, 65));
@@ -113,7 +125,7 @@ public class MainFrame extends JFrame {
 		pnlSidebar.add(btnLogout);
 
 		// ================= HEADER =================
-		JPanel pnlHeader = new JPanel();
+		pnlHeader = new JPanel();
 		pnlHeader.setBackground(Color.WHITE);
 		pnlHeader.setBorder(new MatteBorder(0, 0, 1, 0, Theme.BORDER)); // line at the bottom only
 		pnlHeader.setBounds(230, 0, 934, 80);
@@ -224,6 +236,20 @@ public class MainFrame extends JFrame {
 
 		setLocationRelativeTo(null);
 		setVisible(true);
+	}
+
+	/**
+	 * Stretches the sidebar and header to the new window size.
+	 * The layout is null (absolute positions), so we set the new positions ourselves.
+	 */
+	private void fitToWindow() {
+		int width = contentPane.getWidth();
+		int height = contentPane.getHeight();
+
+		pnlSidebar.setBounds(0, 0, 230, height);           // full height
+		btnLogout.setBounds(10, height - 56, 210, 40);      // stays at the bottom
+		pnlHeader.setBounds(230, 0, width - 230, 80);       // full width
+		lblRoleBadge.setBounds(width - 355, 23, 100, 34);   // stays at the right edge
 	}
 
 	private String yesOrNo(boolean value) {
