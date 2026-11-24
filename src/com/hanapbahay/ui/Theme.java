@@ -11,12 +11,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-/**
- * One place for the app's colors and fonts. Owner: UI member.
- *
- * STATIC FINAL constants (Modules 3 and 4): every screen uses Theme.ACCENT, Theme.TITLE, etc.
- * Change a color here and every screen follows, so the design stays consistent.
- */
 public class Theme {
 
 	// ---- Colors ----
@@ -45,10 +39,8 @@ public class Theme {
 	public static final Font SMALL_BOLD = new Font("Segoe UI", Font.BOLD, 11);
 	public static final Font BIG_NUMBER = new Font("Segoe UI", Font.BOLD, 26);
 
-	// Border for text fields: thin gray line with 8 pixels of space inside
 	public static final Border FIELD_BORDER = new CompoundBorder(new LineBorder(BORDER), new EmptyBorder(0, 8, 0, 8));
 
-	/** Gives every table in the app the same clean look. */
 	public static void styleTable(JTable table, JScrollPane scrollPane) {
 		table.setFont(BODY);
 		table.setRowHeight(30);

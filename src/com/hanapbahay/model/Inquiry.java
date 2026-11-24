@@ -2,29 +2,21 @@ package com.hanapbahay.model;
 
 import java.time.LocalDate;
 
-/**
- * A unit a client selected in Client Mode ("I'm interested"). Matches the "inquiries" table.
- * The agent types the client's name when starting Client Mode, so the client has no account.
- *
- * ENCAPSULATION (Module 4) - private fields with getters and setters.
- */
 public class Inquiry {
 
-	// STATIC FINAL constants (Modules 3 and 4) - the allowed status values
 	public static final String NEW = "NEW";
 	public static final String RESPONDED = "RESPONDED";
 	public static final String CLOSED = "CLOSED";
 
 	private int inquiryId;
-	private int propertyId;     // the unit the client selected
+	private int propertyId;    
 	private String clientName;
 	private String clientContact;
-	private String message;     // optional note, e.g. "Can I visit on Saturday?"
-	private int agentId;        // the agent who opened Client Mode
+	private String message;    
+	private int agentId;      
 	private String status;
-	private String inquiryDate; // format: yyyy-mm-dd, e.g. "2026-11-20"
+	private String inquiryDate; 
 
-	// Constructor with all fields (used when reading an inquiry that already exists)
 	public Inquiry(int inquiryId, int propertyId, String clientName, String clientContact, String message,
 			int agentId, String status, String inquiryDate) {
 		this.inquiryId = inquiryId;
@@ -37,13 +29,10 @@ public class Inquiry {
 		this.inquiryDate = inquiryDate;
 	}
 
-	// Shorter constructor for a NEW selection made today.
-	// Uses this(...) to call the constructor above (constructor chaining, Module 3).
 	public Inquiry(int propertyId, String clientName, String clientContact, String message, int agentId) {
 		this(0, propertyId, clientName, clientContact, message, agentId, NEW, LocalDate.now().toString());
 	}
 
-	// ---- Getters and setters ----
 	public int getInquiryId() {
 		return inquiryId;
 	}

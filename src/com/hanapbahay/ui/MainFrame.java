@@ -19,13 +19,6 @@ import javax.swing.border.MatteBorder;
 
 import com.hanapbahay.model.User;
 
-/**
- * The main window after login. Owner: UI member.
- *
- * Left: dark sidebar menu. Top: page title and role badge. Middle: the page area.
- * Week 1: the Dashboard shows the logged-in user's account and what their role allows.
- * The Listings, Inquiries and Sales pages are added to the menu as each module is finished.
- */
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -124,7 +117,7 @@ public class MainFrame extends JFrame {
 		btnLogout.setBounds(10, 605, 210, 40);
 		pnlSidebar.add(btnLogout);
 
-		// ================= HEADER =================
+		// HEADER 
 		pnlHeader = new JPanel();
 		pnlHeader.setBackground(Color.WHITE);
 		pnlHeader.setBorder(new MatteBorder(0, 0, 1, 0, Theme.BORDER)); // line at the bottom only
@@ -222,13 +215,11 @@ public class MainFrame extends JFrame {
 		pnlAccount.add(lblPermissionsValue);
 	}
 
-	/** Called after a successful login. Kept out of the constructor so WindowBuilder can open this file. */
 	public void showFor(User user) {
 		lblUserName.setText(user.getFullName());
 		lblUserRole.setText(user.getRole());
 		lblRoleBadge.setText(user.getRole());
 
-		// POLYMORPHISM: each method runs the Admin or Agent version
 		lblWelcome.setText(user.getWelcomeMessage());
 		lblUsernameValue.setText(user.getUsername());
 		lblRoleValue.setText(user.getRole());
@@ -239,10 +230,7 @@ public class MainFrame extends JFrame {
 		setVisible(true);
 	}
 
-	/**
-	 * Stretches the sidebar and header to the new window size.
-	 * The layout is null (absolute positions), so we set the new positions ourselves.
-	 */
+//stretch
 	private void fitToWindow() {
 		int width = contentPane.getWidth();
 		int height = contentPane.getHeight();

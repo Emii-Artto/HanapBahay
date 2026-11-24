@@ -1,11 +1,6 @@
 package com.hanapbahay.model;
 
-/**
- * A completed property sale. Matches the "sales" table.
- * The buyer has no account, so we keep the buyer's name and contact number.
- *
- * ENCAPSULATION (Module 4) - private fields with getters and setters.
- */
+//since wala acount mga client
 public class Sale {
 
 	private int saleId;
@@ -27,7 +22,6 @@ public class Sale {
 		this.saleDate = saleDate;
 	}
 
-	// ---- Getters and setters ----
 	public int getSaleId() {
 		return saleId;
 	}

@@ -1,31 +1,32 @@
 package com.hanapbahay;
 
+import com.hanapbahay.dao.InquiryDao;
+import com.hanapbahay.dao.PropertyDao;
+import com.hanapbahay.dao.SaleDao;
 import com.hanapbahay.dao.UserDao;
+import com.hanapbahay.dao.mysql.MySqlInquiryDao;
+import com.hanapbahay.dao.mysql.MySqlPropertyDao;
+import com.hanapbahay.dao.mysql.MySqlSaleDao;
 import com.hanapbahay.dao.mysql.MySqlUserDao;
+import com.hanapbahay.service.DashboardService;
 import com.hanapbahay.service.UserService;
 
-/**
- * The one place where the three layers are connected.
- *
- * STATIC VARIABLES (Module 3) - only one copy exists, shared by every screen,
- * so all screens see the same data.
- * STATIC METHODS (Module 3) - the UI calls them by class name, no object needed:
- *   AppContext.userService().login(...)
- *
- * Week 1: user accounts only. The listing, inquiry and sales services are added here
- * as each module is finished.
- */
 public class AppContext {
-
-	// ---- Data layer: the variable type is the INTERFACE (Module 5, polymorphism) ----
-	// Users now come from the MySQL "users" table (XAMPP).
-	// To test without MySQL, change this back to: new SampleUserDao()
+	// DAOs: the MySQL classes (XAMPP)
 	private static UserDao userDao = new MySqlUserDao();
+	private static PropertyDao propertyDao = new MySqlPropertyDao();
+	private static InquiryDao inquiryDao = new MySqlInquiryDao();
+	private static SaleDao saleDao = new MySqlSaleDao();
 
-	// ---- Business layer (Backend member) ----
+	// backend services the UI calls
 	private static UserService userService = new UserService(userDao);
+	private static DashboardService dashboardService = new DashboardService(propertyDao, inquiryDao, saleDao);
 
 	public static UserService userService() {
 		return userService;
+	}
+
+	public static DashboardService dashboardService() {
+		return dashboardService;
 	}
 }

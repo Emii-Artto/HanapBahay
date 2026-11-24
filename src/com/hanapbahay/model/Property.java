@@ -1,12 +1,8 @@
 package com.hanapbahay.model;
 
-/**
- * A real estate listing. Matches the "properties" table.
- * ENCAPSULATION (Module 4) - private fields, public getters and setters, with validation in setPrice().
- */
+// lisitng
 public class Property {
 
-	// STATIC FINAL constants (Modules 3 and 4) - the allowed status values, shared by all objects
 	public static final String AVAILABLE = "AVAILABLE";
 	public static final String RESERVED = "RESERVED";
 	public static final String SOLD = "SOLD";
@@ -19,7 +15,6 @@ public class Property {
 	private String status;
 	private int agentId;
 
-	// Constructor with all fields (used when reading a listing that already exists)
 	public Property(int propertyId, String title, String location, String type,
 			double price, String status, int agentId) {
 		this.propertyId = propertyId;
@@ -31,8 +26,6 @@ public class Property {
 		this.agentId = agentId;
 	}
 
-	// Shorter constructor for a NEW listing: no ID yet, always starts AVAILABLE.
-	// Uses this(...) to call the constructor above (constructor chaining, Module 3).
 	public Property(String title, String location, String type, double price, int agentId) {
 		this(0, title, location, type, price, AVAILABLE, agentId);
 	}
@@ -41,13 +34,11 @@ public class Property {
 		return status.equals(SOLD);
 	}
 
-	// OVERRIDING (Module 5) Object's toString(): a JComboBox calls this to show the listing
 	@Override
 	public String toString() {
 		return title + " (" + location + ")";
 	}
 
-	// ---- Getters and setters ----
 	public int getPropertyId() {
 		return propertyId;
 	}
@@ -85,7 +76,7 @@ public class Property {
 	}
 
 	public void setPrice(double price) {
-		if (price > 0) { // validation, like setAge() in the Module 4 slides
+		if (price > 0) { 
 			this.price = price;
 		} else {
 			System.out.println("Invalid price value");
