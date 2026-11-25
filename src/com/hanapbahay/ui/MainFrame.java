@@ -19,6 +19,8 @@ import javax.swing.border.MatteBorder;
 
 import com.hanapbahay.model.User;
 
+import login.LogIn;
+
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -253,7 +255,7 @@ public class MainFrame extends JFrame {
 		int answer = JOptionPane.showConfirmDialog(this, "Do you want to log out?", "Log out",
 				JOptionPane.YES_NO_OPTION);
 		if (answer == JOptionPane.YES_OPTION) {
-			LoginFrame login = new LoginFrame();
+			LogIn login = new LogIn(); // back to the new login screen
 			login.setVisible(true);
 			dispose();
 		}

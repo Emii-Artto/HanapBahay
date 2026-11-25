@@ -3,7 +3,8 @@ package com.hanapbahay;
 import javax.swing.JOptionPane;
 
 import com.hanapbahay.dao.DBConnection;
-import com.hanapbahay.ui.LoginFrame;
+
+import login.LogIn;
 
 public class Main {
 
@@ -18,7 +19,7 @@ public class Main {
 			return; 
 		}
 
-		LoginFrame login = new LoginFrame();
+		LogIn login = new LogIn(); // the UI member's new login screen
 		login.setVisible(true);             
 	}
 }

@@ -9,6 +9,7 @@ import com.hanapbahay.dao.mysql.MySqlPropertyDao;
 import com.hanapbahay.dao.mysql.MySqlSaleDao;
 import com.hanapbahay.dao.mysql.MySqlUserDao;
 import com.hanapbahay.service.DashboardService;
+import com.hanapbahay.service.PropertyService;
 import com.hanapbahay.service.UserService;
 
 public class AppContext {
@@ -21,6 +22,7 @@ public class AppContext {
 	// backend services the UI calls
 	private static UserService userService = new UserService(userDao);
 	private static DashboardService dashboardService = new DashboardService(propertyDao, inquiryDao, saleDao);
+	private static PropertyService propertyService = new PropertyService(propertyDao);
 
 	public static UserService userService() {
 		return userService;
@@ -28,5 +30,9 @@ public class AppContext {
 
 	public static DashboardService dashboardService() {
 		return dashboardService;
+	}
+
+	public static PropertyService propertyService() {
+		return propertyService;
 	}
 }
