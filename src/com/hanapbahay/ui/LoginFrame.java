@@ -1,305 +1,327 @@
 package com.hanapbahay.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.*;
 
 import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Agent;
 import com.hanapbahay.model.User;
-import com.hanapbahay.service.UserService;
 
-/**
- * 3.2.1 Authentication: the login screen (design by the UI member, connected to the backend).
- * The username and password are checked by UserService; invalid input shows an error message
- * and the user stays on this screen (5.3.3).
- */
 public class LoginFrame extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private static final String ADMIN = "Admin";
-	private static final String AGENT = "Agent";
+    private static final long serialVersionUID = 1L;
 
-	private JTextField txtUsername;
-	private JPasswordField txtPassword;
-	private JComboBox<String> cboAccountType;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JCheckBox rememberMe;
+    private boolean passwordVisible = false;
 
-	public LoginFrame() {
-		setTitle("HanapBahay - Login");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(1100, 700);
-		setMinimumSize(new Dimension(900, 620));
-		setLocationRelativeTo(null);
+   
+    private final Color BACKGROUND = new Color(23, 26, 33);
+    private final Color PANEL = new Color(32, 35, 43);
+    private final Color GOLD = new Color(198, 161, 91);
+    private final Color WHITE = new Color(245, 245, 245);
+    private final Color MUTED = new Color(160, 164, 174);
+    private final Color FIELD = new Color(43, 46, 55);
 
-		JPanel mainPanel = new JPanel(new GridLayout(1, 2));
-		mainPanel.setBackground(Theme.DARK);
-		mainPanel.add(createBrandPanel());
-		mainPanel.add(createLoginSide());
-		setContentPane(mainPanel);
-	}
+    public LoginFrame() {
+        setTitle("Estate Manager - Login");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1100, 700);
+        setMinimumSize(new Dimension(900, 620));
+        setLocationRelativeTo(null);
 
-	// ======================= left: brand panel =======================
-	private JPanel createBrandPanel() {
-		JPanel left = new BrandPanel();
-		left.setLayout(new BorderLayout());
-		left.setBorder(new EmptyBorder(35, 42, 40, 35));
+        JPanel mainPanel = new JPanel(new GridLayout(1, 2, 0, 0));
+        mainPanel.setBackground(BACKGROUND);
 
-		JLabel brand = new JLabel("⌂  HANAPBAHAY");
-		brand.setFont(new Font("SansSerif", Font.BOLD, 20));
-		brand.setForeground(Theme.GOLD);
-		left.add(brand, BorderLayout.NORTH);
+        // LEFT SIDE: property photo with text overlay
+        PhotoPanel leftPanel = new PhotoPanel("/images/estate-house.jpg");
+        leftPanel.setLayout(new BorderLayout());
+        leftPanel.setBorder(new EmptyBorder(35, 42, 35, 35));
 
-		JPanel caption = new JPanel();
-		caption.setOpaque(false);
-		caption.setLayout(new BoxLayout(caption, BoxLayout.Y_AXIS));
-		JLabel small = new JLabel("FIND YOUR");
-		small.setFont(new Font("SansSerif", Font.BOLD, 16));
-		small.setForeground(Theme.GOLD);
-		JLabel big = new JLabel("Perfect Property.");
-		big.setFont(new Font("Serif", Font.BOLD, 38));
-		big.setForeground(Theme.WHITE);
-		JLabel description = new JLabel("<html>Manage property listings, buyers, viewings<br>"
-				+ "and deals in one convenient platform.</html>");
-		description.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		description.setForeground(Theme.WHITE);
-		caption.add(small);
-		caption.add(Box.createVerticalStrut(10));
-		caption.add(big);
-		caption.add(Box.createVerticalStrut(14));
-		caption.add(description);
-		left.add(caption, BorderLayout.SOUTH);
-		return left;
-	}
+        JPanel brandPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        brandPanel.setOpaque(false);
 
-	/** Dark gradient with simple gold houses (used when there is no property photo). */
-	private static class BrandPanel extends JPanel {
-		private static final long serialVersionUID = 1L;
+        JLabel logo = new JLabel("⌂");
+        logo.setFont(new Font("Serif", Font.BOLD, 42));
+        logo.setForeground(GOLD);
 
-		@Override
-		protected void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			Graphics2D g2 = (Graphics2D) g.create();
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			int w = getWidth();
-			int h = getHeight();
-			g2.setPaint(new GradientPaint(0, 0, new Color(40, 36, 30), w, h, new Color(18, 20, 26)));
-			g2.fillRect(0, 0, w, h);
-			g2.setColor(new Color(205, 169, 96, 60));
-			g2.fillOval(w / 2 - 40, h / 3 - 120, 360, 360);
-			drawHouse(g2, w / 2 - 20, h / 2 - 20, 150);
-			drawHouse(g2, w / 2 + 110, h / 2 + 20, 110);
-			g2.dispose();
-		}
+        JLabel brandName = new JLabel("ESTATE MANAGER");
+        brandName.setFont(new Font("SansSerif", Font.BOLD, 19));
+        brandName.setForeground(WHITE);
 
-		private void drawHouse(Graphics2D g2, int x, int y, int size) {
-			g2.setStroke(new java.awt.BasicStroke(4));
-			g2.setColor(Theme.GOLD);
-			g2.drawLine(x - size / 2 - 10, y, x, y - size / 2);
-			g2.drawLine(x, y - size / 2, x + size / 2 + 10, y);
-			g2.setColor(new Color(15, 16, 20));
-			g2.fillRect(x - size / 2, y, size, (int) (size * 0.6));
-			g2.setColor(Theme.GOLD);
-			int window = size / 5;
-			g2.fillRect(x - size / 3, y + size / 8, window, (int) (window * 1.4));
-			g2.fillRect(x + size / 3 - window, y + size / 8, window, (int) (window * 1.4));
-		}
-	}
+        brandPanel.add(logo);
+        brandPanel.add(brandName);
+        leftPanel.add(brandPanel, BorderLayout.NORTH);
 
-	// ======================= right: login card =======================
-	private JPanel createLoginSide() {
-		JPanel right = new JPanel(new GridBagLayout());
-		right.setBackground(Theme.DARK);
+        JPanel leftCaption = new JPanel();
+        leftCaption.setOpaque(false);
+        leftCaption.setLayout(new BoxLayout(leftCaption, BoxLayout.Y_AXIS));
 
-		JPanel card = new JPanel();
-		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-		card.setBackground(Theme.PANEL);
-		card.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(65, 62, 54)),
-				new EmptyBorder(35, 40, 28, 40)));
+        JLabel smallHeading = new JLabel("FIND YOUR");
+        smallHeading.setFont(new Font("SansSerif", Font.BOLD, 16));
+        smallHeading.setForeground(GOLD);
+        smallHeading.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		JLabel title = new JLabel("Welcome Back!");
-		title.setFont(new Font("Serif", Font.BOLD, 31));
-		title.setForeground(Theme.WHITE);
-		title.setAlignmentX(Component.LEFT_ALIGNMENT);
-		JLabel subtitle = Theme.mutedLabel("Log in to access your account.");
-		subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
-		card.add(title);
-		card.add(Box.createVerticalStrut(6));
-		card.add(subtitle);
-		card.add(Box.createVerticalStrut(28));
+        JLabel mainHeading = new JLabel("Perfect Property.");
+        mainHeading.setFont(new Font("Serif", Font.BOLD, 38));
+        mainHeading.setForeground(WHITE);
+        mainHeading.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		card.add(row(Theme.caption("Account type")));
-		cboAccountType = new JComboBox<String>(new String[] { AGENT, ADMIN });
-		Theme.styleCombo(cboAccountType);
-		card.add(row(cboAccountType));
-		card.add(Box.createVerticalStrut(14));
+        JLabel description = new JLabel(
+            "<html>Manage property listings, connect with clients,<br>"
+            + "and organize every real estate transaction<br>"
+            + "in one convenient platform.</html>"
+        );
+        description.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        description.setForeground(WHITE);
+        description.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		card.add(row(Theme.caption("Username")));
-		txtUsername = Theme.field();
-		card.add(row(txtUsername));
-		card.add(Box.createVerticalStrut(14));
+        leftCaption.add(smallHeading);
+        leftCaption.add(Box.createVerticalStrut(10));
+        leftCaption.add(mainHeading);
+        leftCaption.add(Box.createVerticalStrut(14));
+        leftCaption.add(description);
 
-		card.add(row(Theme.caption("Password")));
-		txtPassword = new JPasswordField();
-		Theme.styleField(txtPassword);
-		card.add(row(txtPassword));
+        leftPanel.add(leftCaption, BorderLayout.SOUTH);
 
-		final JCheckBox chkShow = new JCheckBox("Show password");
-		chkShow.setFont(Theme.SMALL);
-		chkShow.setForeground(Theme.MUTED);
-		chkShow.setBackground(Theme.PANEL);
-		chkShow.setFocusPainted(false);
-		chkShow.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				txtPassword.setEchoChar(chkShow.isSelected() ? (char) 0 : '•');
-			}
-		});
-		card.add(row(chkShow));
-		card.add(Box.createVerticalStrut(18));
+        // RIGHT SIDE: neatly aligned login form
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+        rightPanel.setBackground(BACKGROUND);
+        rightPanel.setBorder(new EmptyBorder(35, 45, 35, 45));
 
-		JButton btnLogin = Theme.goldButton("SIGN IN");
-		btnLogin.setFont(new Font("SansSerif", Font.BOLD, 14));
-		btnLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				doLogin();
-			}
-		});
-		card.add(row(btnLogin));
-		getRootPane().setDefaultButton(btnLogin); // pressing Enter clicks SIGN IN
-		card.add(Box.createVerticalStrut(16));
+        JPanel loginCard = new JPanel(new GridBagLayout());
+        loginCard.setBackground(PANEL);
+        loginCard.setBorder(new CompoundBorder(
+            new LineBorder(new Color(65, 62, 54), 1),
+            new EmptyBorder(38, 42, 35, 42)
+        ));
+        loginCard.setPreferredSize(new Dimension(480, 535));
 
-		JPanel createRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 6, 0));
-		createRow.setOpaque(false);
-		createRow.add(Theme.mutedLabel("New agent?"));
-		JButton btnCreate = new JButton("CREATE ACCOUNT");
-		btnCreate.setFont(Theme.SMALL_BOLD);
-		btnCreate.setForeground(Theme.GOLD);
-		btnCreate.setBackground(Theme.PANEL);
-		btnCreate.setBorder(null);
-		btnCreate.setFocusPainted(false);
-		btnCreate.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		btnCreate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showCreateAccount();
-			}
-		});
-		createRow.add(btnCreate);
-		card.add(row(createRow));
-		card.add(Box.createVerticalStrut(14));
-		JLabel authorized = new JLabel("AUTHORIZED USERS ONLY");
-		authorized.setFont(new Font("SansSerif", Font.BOLD, 10));
-		authorized.setForeground(Theme.MUTED);
-		JPanel authorizedRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		authorizedRow.setOpaque(false);
-		authorizedRow.add(authorized);
-		card.add(row(authorizedRow));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 0, 0, 0);
 
-		right.add(card);
-		return right;
-	}
+        JLabel loginTitle = new JLabel("Welcome Back!");
+        loginTitle.setFont(new Font("Serif", Font.BOLD, 31));
+        loginTitle.setForeground(WHITE);
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, 8, 0);
+        loginCard.add(loginTitle, gbc);
 
-	// every row in the card has the same width (350) so the fields line up
-	private JPanel row(Component component) {
-		JPanel row = new JPanel(new BorderLayout());
-		row.setOpaque(false);
-		row.setAlignmentX(Component.LEFT_ALIGNMENT);
-		int height = Math.max(component.getPreferredSize().height, 22);
-		if (component instanceof JTextField || component instanceof JComboBox || component instanceof JButton) {
-			height = 42;
-		}
-		row.setPreferredSize(new Dimension(350, height));
-		row.setMaximumSize(new Dimension(350, height));
-		row.add(component, BorderLayout.CENTER);
-		return row;
-	}
+        JLabel loginSubtitle = new JLabel("Log in to access your account.");
+        loginSubtitle.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        loginSubtitle.setForeground(MUTED);
+        gbc.gridy = 1;
+        gbc.insets = new Insets(0, 0, 32, 0);
+        loginCard.add(loginSubtitle, gbc);
 
-	// ======================= login =======================
-	private void doLogin() {
-		UserService service = AppContext.userService();
-		User user = service.login(txtUsername.getText(), new String(txtPassword.getPassword()));
-		if (user == null) {
-			JOptionPane.showMessageDialog(this, service.getMessage(), "Cannot log in", JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		String chosenType = (String) cboAccountType.getSelectedItem();
-		boolean wantsAdmin = ADMIN.equals(chosenType);
-		if (user.isAdmin() != wantsAdmin) {
-			JOptionPane.showMessageDialog(this,
-					"This is " + (user.isAdmin() ? "an Admin" : "an Agent") + " account.\nPlease choose \""
-							+ (user.isAdmin() ? ADMIN : AGENT) + "\" as the account type.",
-					"Wrong account type", JOptionPane.WARNING_MESSAGE);
-			return;
-		}
+        JLabel loginLabel = new JLabel("LOG IN");
+        loginLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
+        loginLabel.setForeground(WHITE);
+        gbc.gridy = 2;
+        gbc.insets = new Insets(0, 0, 22, 0);
+        loginCard.add(loginLabel, gbc);
 
-		if (user.isAdmin()) {
-			new AdminDashboard(user).setVisible(true);
-		} else {
-			Agent agent = service.getAgentProfile(user);
-			if (agent == null) {
-				JOptionPane.showMessageDialog(this, service.getMessage(), "Cannot log in",
-						JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-			new MainDashboard(user, agent).setVisible(true);
-		}
-		dispose(); // close the login window
-	}
+        JLabel usernameLabel = createLabel("USERNAME");
+        gbc.gridy = 3;
+        gbc.insets = new Insets(0, 0, 8, 0);
+        loginCard.add(usernameLabel, gbc);
 
-	/** Create Account: makes a new AGENT account with its profile. */
-	private void showCreateAccount() {
-		JTextField txtFirst = Theme.field();
-		JTextField txtLast = Theme.field();
-		JTextField txtContact = Theme.field();
-		JTextField txtEmail = Theme.field();
-		JTextField txtNewUsername = Theme.field();
-		JPasswordField txtNewPassword = new JPasswordField();
-		JPasswordField txtConfirm = new JPasswordField();
-		Theme.styleField(txtNewPassword);
-		Theme.styleField(txtConfirm);
-		JPanel form = Theme.form(new Object[] { "First name *", txtFirst, "Last name *", txtLast, "Contact number *",
-				txtContact, "Email", txtEmail, "Username *", txtNewUsername, "Password * (6+ characters)",
-				txtNewPassword, "Confirm password *", txtConfirm });
+        usernameField = new JTextField();
+        styleField(usernameField);
+        gbc.gridy = 4;
+        gbc.insets = new Insets(0, 0, 22, 0);
+        loginCard.add(usernameField, gbc);
 
-		UserService service = AppContext.userService();
-		while (JOptionPane.showConfirmDialog(this, form, "Create Agent Account", JOptionPane.OK_CANCEL_OPTION,
-				JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-			if (service.registerAgent(txtFirst.getText(), txtLast.getText(), txtContact.getText(), txtEmail.getText(),
-					txtNewUsername.getText(), new String(txtNewPassword.getPassword()),
-					new String(txtConfirm.getPassword()))) {
-				JOptionPane.showMessageDialog(this, service.getMessage(), "Account created",
-						JOptionPane.INFORMATION_MESSAGE);
-				cboAccountType.setSelectedItem(AGENT);
-				txtUsername.setText(txtNewUsername.getText().trim());
-				txtPassword.setText("");
-				return;
-			}
-			JOptionPane.showMessageDialog(this, service.getMessage(), "Cannot create account",
-					JOptionPane.WARNING_MESSAGE);
-		}
-	}
+        JLabel passwordLabel = createLabel("PASSWORD");
+        gbc.gridy = 5;
+        gbc.insets = new Insets(0, 0, 8, 0);
+        loginCard.add(passwordLabel, gbc);
+
+        passwordField = new JPasswordField();
+        styleField(passwordField);
+        gbc.gridy = 6;
+        gbc.insets = new Insets(0, 0, 10, 0);
+        loginCard.add(passwordField, gbc);
+
+        JCheckBox showPassword = new JCheckBox("Show password");
+        showPassword.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        showPassword.setForeground(MUTED);
+        showPassword.setBackground(PANEL);
+        showPassword.setFocusPainted(false);
+        showPassword.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        showPassword.addActionListener(e -> togglePassword());
+        gbc.gridy = 7;
+        gbc.insets = new Insets(0, 0, 17, 0);
+        loginCard.add(showPassword, gbc);
+
+        rememberMe = new JCheckBox("Remember me");
+        rememberMe.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        rememberMe.setForeground(MUTED);
+        rememberMe.setBackground(PANEL);
+        rememberMe.setFocusPainted(false);
+
+        JButton forgotPassword = new JButton("Forgot Password?");
+        styleTextButton(forgotPassword);
+        forgotPassword.addActionListener(e -> JOptionPane.showMessageDialog(
+            this,
+            "Please contact your system administrator for password assistance.",
+            "Forgot Password",
+            JOptionPane.INFORMATION_MESSAGE
+        ));
+
+        JPanel optionsPanel = new JPanel(new BorderLayout());
+        optionsPanel.setOpaque(false);
+        optionsPanel.add(rememberMe, BorderLayout.WEST);
+        optionsPanel.add(forgotPassword, BorderLayout.EAST);
+
+        gbc.gridy = 8;
+        gbc.insets = new Insets(0, 0, 24, 0);
+        loginCard.add(optionsPanel, gbc);
+
+        JButton loginButton = new JButton("SIGN IN");
+        loginButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        loginButton.setForeground(BACKGROUND);
+        loginButton.setBackground(GOLD);
+        loginButton.setBorder(new EmptyBorder(13, 15, 13, 15));
+        loginButton.setFocusPainted(false);
+        loginButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        loginButton.setPreferredSize(new Dimension(300, 48));
+        loginButton.addActionListener(e -> login());
+        loginButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                loginButton.setBackground(new Color(220, 187, 125));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                loginButton.setBackground(GOLD);
+            }
+        });
+
+        gbc.gridy = 9;
+        gbc.insets = new Insets(0, 0, 25, 0);
+        loginCard.add(loginButton, gbc);
+        getRootPane().setDefaultButton(loginButton); // pressing Enter clicks SIGN IN
+
+        JLabel bottomText = new JLabel("AUTHORIZED USERS ONLY");
+        bottomText.setFont(new Font("SansSerif", Font.BOLD, 10));
+        bottomText.setForeground(MUTED);
+        gbc.gridy = 10;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        loginCard.add(bottomText, gbc);
+
+        rightPanel.add(loginCard);
+
+        mainPanel.add(leftPanel);
+        mainPanel.add(rightPanel);
+        setContentPane(mainPanel);
+    }
+
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("SansSerif", Font.BOLD, 12));
+        label.setForeground(GOLD);
+        return label;
+    }
+
+    private void styleField(JTextField field) {
+        field.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        field.setBackground(FIELD);
+        field.setForeground(WHITE);
+        field.setCaretColor(GOLD);
+        field.setBorder(new CompoundBorder(
+            new LineBorder(new Color(75, 75, 80), 1),
+            new EmptyBorder(10, 12, 10, 12)
+        ));
+        field.setPreferredSize(new Dimension(350, 46));
+        field.setMinimumSize(new Dimension(250, 46));
+    }
+
+    private void styleTextButton(JButton button) {
+        button.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        button.setForeground(GOLD);
+        button.setBackground(PANEL);
+        button.setBorder(null);
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
+    private void togglePassword() {
+        if (passwordVisible) {
+            passwordField.setEchoChar('•');
+            passwordVisible = false;
+        } else {
+            passwordField.setEchoChar((char) 0);
+            passwordVisible = true;
+        }
+    }
+
+    private void login() {
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword());
+
+        User user = AppContext.userService().login(username, password); // calls the backend
+
+        if (user != null) {
+            MainFrame main = new MainFrame();
+            main.showFor(user);
+            dispose(); // close the login window
+        } else {
+            JOptionPane.showMessageDialog(this, AppContext.userService().getMessage(), "Cannot log in",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    // Displays the selected property photo and darkens it slightly for readable text.
+    private class PhotoPanel extends JPanel {
+        private static final long serialVersionUID = 1L;
+        private BufferedImage photo;
+
+        PhotoPanel(String resourcePath) {
+            try {
+                photo = ImageIO.read(LoginFrame.class.getResource(resourcePath));
+            } catch (Exception ex) {
+                System.out.println("Property image not found: " + resourcePath);
+            }
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            Graphics2D g2 = (Graphics2D) g.create();
+            if (photo != null) {
+                int panelW = getWidth();
+                int panelH = getHeight();
+                double scale = Math.max(
+                    (double) panelW / photo.getWidth(),
+                    (double) panelH / photo.getHeight()
+                );
+                int imageW = (int) (photo.getWidth() * scale);
+                int imageH = (int) (photo.getHeight() * scale);
+                int x = (panelW - imageW) / 2;
+                int y = (panelH - imageH) / 2;
+
+                g2.drawImage(photo, x, y, imageW, imageH, this);
+                g2.setColor(new Color(10, 12, 17, 125));
+                g2.fillRect(0, 0, panelW, panelH);
+            } else {
+                g2.setColor(BACKGROUND);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.setColor(GOLD);
+                g2.setFont(new Font("SansSerif", Font.BOLD, 16));
+                g2.drawString("Add your property photo here", 35, getHeight() / 2);
+            }
+            g2.dispose();
+        }
+    }
 }
