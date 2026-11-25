@@ -1,76 +1,97 @@
 # HanapBahay
 
-**A Real Estate Listing, Inquiry, and Sales Monitoring System** (Java Swing + MySQL, Eclipse + WindowBuilder).
-Built from the group's project proposal (BSIT-2103, Group 4: Guce, Mañibo, Vergara).
+Real Estate Listing, Inquiry, and Sales Monitoring System (Java Swing + MySQL, Eclipse + WindowBuilder).
 
 ## Who uses the system
 
-- **Agents** log in and manage their properties, clients (buyers), viewings, deals and reports.
-- **Buyers have no account.** In **Client Browse Mode** the agent hands the device to the buyer, who can only browse,
-  search and filter *Available* properties and see their photos. Leaving the mode needs the agent's password.
-- **Admin** (extra, not in the paper): sees an overview of all agents and the reports for all agents.
+- **Admin** and **Agent** log in with a username and password.
+- **Clients have no account.** When meeting a walk-in client (for example, after a tripping), the agent opens
+  **Client Mode**, types the client's name, and hands the device over. The client browses the available units and
+  taps "I'm interested" on the ones they like. Exiting Client Mode needs the agent's password.
+  Each unit the client selects is saved as an **inquiry** with the client's name, contact number and the agent.
 
-## Features (paper section 3.1)
+## Progress
 
-| Section | What it does |
-|---|---|
-| **Agent** | Agent profile (edit), cards for listings / clients / upcoming viewings / completed deals, next viewings |
-| **Properties** | Add, edit, delete, view, search and filter listings. Types: House and Lot, Vacant Lot, Condominium, each with subtypes. Up to 4 photos per property, shown as a thumbnail and in a photo gallery |
-| **Clients** | Register buyers with budget and preferences, search by name or contact number, **Find Matches** |
-| **Viewing** | Schedule visits (client, property, date, time), mark Completed or Cancelled. No double booking |
-| **Deals** | Record deals with payment method (PAG-IBIG, Bank Financing, Cash). Pending → property Reserved, Completed → property Sold, Cancelled → Available |
-| **Reports** | Property Listings, Status Summary, Client Records, Viewing Schedule, Deal Records, Sales Summary, Payment Method Summary. **Print** or **Export CSV** |
+| Week | Status | What was done |
+|---|---|---|
+| 1 | Done | Project structure, model classes, database schema, login backend, Login screen, main window with account dashboard, **login reads from MySQL (XAMPP)** |
+| 2 | Next | Property listings: search, filter, add, update, delete |
+| 3 | Planned | Client Mode (browse, select units, exit with password) and the agent's inquiries list |
+| 4 | Planned | Sales recording and sales report |
+| 5 | Planned | MySQL connection for all modules, testing |
 
-## How the code is organized
+## Who owns what
+
+| Package / folder | Owner | What goes there |
+|---|---|---|
+| `src/com/hanapbahay/ui` | **UI member** | WindowBuilder screens (JFrames, JPanels) and `Theme` (colors and fonts) |
+| `src/com/hanapbahay/service` | **Backend member** | Business rules: login, validation, recording sales, sales totals |
+| `src/com/hanapbahay/dao`, `db/`, `lib/` | **Database member** | DAO interfaces, MySQL classes, `schema.sql`, JDBC driver |
+| `src/com/hanapbahay/model` | **Everyone (agree first)** | Shared classes: `User` (`Admin`, `Agent`), `Property`, `Inquiry`, `Sale` |
+| `AppContext.java` | Everyone | Connects the layers. Swap sample DAOs for MySQL DAOs here |
+
+**Rule:** only edit files in your own area. If you need a change in someone else's area, ask them first. This avoids Git merge conflicts.
+
+## How the layers talk
 
 ```
-ui/       LoginFrame, MainDashboard, AdminDashboard   (JFrames, extend BaseFrame)
-          AgentPanel, PropertiesPanel, ClientsPanel,
-          ViewingPanel, DealsPanel, ReportsPanel      (JPanels, extend BasePanel)
-          PhotoGalleryDialog, Theme
-service/  UserService, PropertyService, ClientService, ViewingService, DealService,
-          ReportGenerator, Report                      (rules, validation, messages)
-dao/      CrudDAO (interface), PropertyDAO, ClientDAO, ViewingDAO, DealDAO, UserDAO, DBConnection
-model/    Person (abstract) -> Agent, Client
-          Property (abstract) -> HouseAndLot, VacantLot, Condominium
-          User, PropertyPhoto, Viewing, PaymentMethod, Deal
+UI (ui/)  ──calls──▶  Services (service/)  ──calls──▶  DAO interfaces (dao/)
+                                                          ├─ mysql/   real MySQL tables (XAMPP)  ← used now for users
+                                                          └─ sample/  data in memory (for testing without MySQL)
 ```
 
-- The screens never write SQL. They call a service through `AppContext`, the service checks the input, and the
-  DAO talks to MySQL with `PreparedStatement` (`?` placeholders, so typed text cannot change the SQL).
-- A service returns `true`/`false` (or `null`); `getMessage()` explains the problem in plain words.
+- The UI **never** writes SQL. It only calls `AppContext.userService()` (more services are added each week).
+- Service methods return `true`/`false` (or `null` for login). The reason is in `getMessage()`, which the UI shows in a `JOptionPane`.
+- Only the DAO classes in `dao/mysql/` contain SQL. They use `PreparedStatement` with `?` placeholders, which also blocks SQL injection.
+- `Main` checks the database at startup. If MySQL isn't running, it shows a message telling you to start it in XAMPP.
 
-## Four pillars of OOP (paper section IV)
+Test logins (from the `users` table): `admin / admin123`, `agent1 / agent123`, `agent2 / agent123`
 
-| Pillar | Where |
-|---|---|
-| **Encapsulation** | All fields are private. `Property.setPrice()` refuses 0 or less, `setLotArea()` refuses negative values, `setStatus()` only accepts Available/Reserved/Sold. `User` has **no getter for the password hash**; it only offers `checkPassword()` |
-| **Inheritance** | `Agent` and `Client` extend `Person`. `HouseAndLot`, `VacantLot`, `Condominium` extend `Property`. Panels extend `BasePanel` (a `JPanel`); dashboards extend `BaseFrame` (a `JFrame`). Services extend `BaseService`, DAOs extend `BaseDAO` |
-| **Polymorphism** | `getDetails()` gives a different description for each property type; the gallery and the DAO work with one `Property` type. `MainDashboard` keeps six different panels in one `BasePanel[]` and calls `refresh()`. **Overloading:** `PropertyDAO.search(String keyword)` and `search(double min, double max)` |
-| **Abstraction** | `Person` and `Property` are abstract; `Property` forces `getDetails()`. The `CrudDAO` interface defines add, update, delete, getAll without saying how |
+## Week 1: where each OOP concept is used
 
-## Validation (paper section 5.3)
+| Concept | Module | Where to find it |
+|---|---|---|
+| Class, object, `new` | 3 | Every class; objects created in `Main`, `AppContext`, `SampleUserDao` |
+| Constructor, `this` | 3 | `User`, `Property`, `Inquiry`, `UserService` |
+| Constructor chaining `this(...)` | 3 | `Property(title, location, type, price, agentId)`, `Inquiry(propertyId, clientName, clientContact, message, agentId)` |
+| Access modifiers (`public`, `private`, `protected`) | 3 | `BaseService.message` is `protected`; model fields are `private` |
+| Static variables and methods | 3 | `AppContext.userService()`, `DBConnection.getConnection()` |
+| Encapsulation (private fields + getters/setters) | 4 | All model classes; `Property.setPrice()` validates like `setAge()` in the slides |
+| Inheritance (`extends`) | 4 | `Admin` and `Agent` extend `User`; `UserService` extends `BaseService` |
+| `super(...)` | 4 | `Admin` and `Agent` constructors |
+| `final` constants | 4 | `Property.AVAILABLE/RESERVED/SOLD`, `Inquiry.NEW/RESPONDED/CLOSED`, `Theme` colors |
+| Method overriding (`@Override`) | 4, 5 | `getRole()` and `getPermissions()` in `Admin` and `Agent`; `canViewAllSales()` in `Admin` |
+| Runtime polymorphism | 5 | After login, the Dashboard calls `user.getRole()`, `user.getPermissions()` and `user.canViewAllSales()`; Admin and Agent give different answers |
+| Abstract class and abstract method | 5 | `User` with `abstract String getRole()` and `abstract String getPermissions()` |
+| Interface (`implements`) | 5 | `UserDao`, `PropertyDao`, `InquiryDao`, `SaleDao`; both `MySqlUserDao` and `SampleUserDao` implement `UserDao`, and `UserService` works with either |
+| Exception handling (`try`/`catch`) | Project matrix | `DBConnection` and `MySqlUserDao` catch `SQLException`, so a database problem shows a message instead of crashing |
 
-Required fields · prices and budgets must be numbers above zero (`NumberFormatException` is caught) · lot area not
-below zero · login error message · at most 4 photos, and each file must be a real image · no second viewing for the
-same property at the same date and time · no second active deal for a property · a property or client with viewings
-or deals cannot be deleted · database problems show a message instead of crashing.
+## First-time setup (each member)
 
-## Setup (each member)
+1. In Eclipse: **File → Import → Git → Projects from Git → Clone URI**, paste the GitHub repo URL, and finish the wizard.
+2. Install **XAMPP**. Open the **XAMPP Control Panel** and click **Start** next to **Apache** and **MySQL**.
+3. Open **http://localhost/phpmyadmin** → **Import** → choose `db/schema.sql` → **Import**. The `hanapbahay` database appears.
+4. Run `src/com/hanapbahay/Main.java` (**Run As → Java Application**). The login screen should appear.
 
-1. **Pull** the `real-main32` branch in Eclipse, then **Refresh** (F5) and **Project → Clean**.
-2. Start **MySQL** (and Apache) in the **XAMPP Control Panel**.
-3. Open **http://localhost/phpmyadmin** → **Import** → choose `db/schema.sql` → **Import**.
-   This **replaces** the old `hanapbahay` database with the new tables from the paper.
-4. Run `src/com/hanapbahay/Main.java` (**Run As → Java Application**).
+The MySQL driver (`lib/mysql-connector-j-8.4.0.jar`) is already included. XAMPP's default login (`root`, no password)
+is already set in `DBConnection.java`; change it there only if your MySQL uses a password.
+**Start MySQL in XAMPP every time** before running the app.
 
-Test logins: `agent1 / agent123` (Maria Santos), `agent2 / agent123` (Paolo Reyes), `admin / admin123`.
-Choose the matching **Account type** on the login screen. Passwords are stored as SHA-256 hashes.
+## Daily workflow
 
-Photos added in the app are copied into the `photos/` folder of the project. Only their paths are saved in MySQL,
-and the folder is not uploaded to GitHub, so photos stay on the computer where they were added.
+1. **Pull** first (right-click project → Team → Pull), then **Refresh** (F5) so Eclipse sees new files.
+2. Work on your part and test it.
+3. **Commit** with a clear message (Team → Commit), then **Push**.
 
-## Database tables (paper section 3.4)
+## Database member: MySQL classes
 
-`users`, `agents`, `properties`, `property_photos`, `clients`, `viewings`, `payment_methods`, `deals`.
-See `db/schema.sql` for every column and the foreign keys.
+| Table | MySQL DAO | Status |
+|---|---|---|
+| `users` | `dao/mysql/MySqlUserDao` | Done (login uses it) |
+| `properties` | `MySqlPropertyDao` | Week 2 |
+| `inquiries` | `MySqlInquiryDao` | Week 3 |
+| `sales` | `MySqlSaleDao` | Week 4 |
+
+Each new MySQL DAO follows the same pattern as `MySqlUserDao`: get a connection from `DBConnection.getConnection()`,
+use a `PreparedStatement`, read rows with `ResultSet`, close the connection, and catch `SQLException`.
+Then switch it on in `AppContext.java`.
