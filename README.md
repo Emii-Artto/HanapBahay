@@ -6,10 +6,18 @@ on top of the `real-main2` code (UI member's dark-and-gold design, `dao.mysql` c
 
 ## Who uses the system
 
-- **Agents** log in and manage their properties, clients (buyers), viewings, deals and reports.
+Three kinds of accounts, from the highest authority down. **There is no sign-up on the login screen.**
+
+| Role | Example | Can do |
+|---|---|---|
+| **Owner** | head of the agency (CEO) | Created once at installation (`schema.sql`). Everything an Admin can do, plus **add, reset, deactivate and reactivate Admins**. Cannot be deactivated or changed by anyone. |
+| **Admin** | office staff (secretary) | **Manage Users** for Agents (add, reset password, deactivate/activate), Overview and Reports for all agents. Cannot create or change Admins or the Owner. |
+| **Agent** | sales agent | Their own properties, clients, viewings, deals and reports. |
+
+- A deactivated account cannot log in, but its records are kept. Nobody can deactivate their own account.
+- Every account records who created it (`created_by`), so you can see who gave each person access.
 - **Buyers have no account.** In **Client Browse Mode** the agent hands the device to the buyer, who can only browse,
   search and filter *Available* properties and see their photos. Leaving the mode needs the agent's password.
-- **Admin** (extra, not in the paper): an overview of all agents and the reports for all agents.
 
 ## Features (paper 3.1)
 
@@ -21,16 +29,19 @@ on top of the `real-main2` code (UI member's dark-and-gold design, `dao.mysql` c
 | **Viewing** | Schedule visits (client, property, date, time), mark Completed or Cancelled, no double booking |
 | **Deals** | PAG-IBIG / Bank Financing / Cash. Pending → property Reserved, Completed → Sold, Cancelled → Available |
 | **Reports** | Property Listings, Status Summary, Client Records, Viewing Schedule, Deal Records, Sales Summary, Payment Method Summary — **Print** or **Export CSV** |
+| **Manage Users** (Owner/Admin) | Add Agent, Add Admin (Owner only), Reset Password, Deactivate / Activate (paper 3.1.9) |
 
 ## How the code is organized (matrix: GUI → business logic → data access → RDBMS)
 
 ```
-login/          LoginFrame, RegisterDialog, BrandPanel                      (GUI, WindowBuilder)
-dash/           MainDashboard, AdminDashboard                               (JFrames)
+login/          LoginFrame, BrandPanel                                      (GUI, WindowBuilder)
+dash/           MainDashboard (agents), AdminDashboard (Owner/Admin)        (JFrames)
                 AgentPanel, PropertiesPanel, ClientsPanel, ViewingPanel,
-                DealsPanel, ReportsPanel, AdminOverviewPanel                (JPanels, implement DashboardSection)
+                DealsPanel, ReportsPanel, AdminOverviewPanel,
+                ManageUsersPanel                                            (JPanels, implement DashboardSection)
                 PropertyFormDialog, ClientFormDialog, ViewingFormDialog,
-                DealFormDialog, ProfileDialog, PhotoGalleryDialog, MatchesDialog   (JDialogs)
+                DealFormDialog, ProfileDialog, UserFormDialog,
+                PhotoGalleryDialog, MatchesDialog                           (JDialogs)
                 AppButton, AppTable, StatCard, HeroBanner, ... Theme        (reusable styled components)
 com.hanapbahay.service   UserService, PropertyService, ClientService, ViewingService,
                          DealService, ReportGenerator, Report                (rules, validation, messages)
@@ -62,6 +73,8 @@ Required fields · prices and budgets must be numbers above zero (`NumberFormatE
 below zero · login errors · at most 4 photos and each must be a real image · no second viewing for the same property
 at the same date and time · no second active deal for a property · a property or client with viewings or deals cannot
 be deleted · database problems show a message instead of crashing.
+**Accounts (5.3.9):** unique usernames without spaces · passwords of 6+ characters typed twice · only the Owner manages
+Admins · the Owner cannot be changed · nobody changes their own account in Manage Users · deactivated accounts cannot log in.
 
 ## Setup (each member)
 
@@ -71,8 +84,15 @@ be deleted · database problems show a message instead of crashing.
    This **replaces** the old `hanapbahay` database with the paper's tables.
 4. Run `src/com/hanapbahay/Main.java` (**Run As → Java Application**).
 
-Test logins: `agent1 / agent123` (Maria Santos), `agent2 / agent123` (Paolo Reyes), `admin / admin123`.
-Choose the matching **Account type**. Passwords are stored as SHA-256 hashes.
+Test logins (choose the matching **Account type**):
+
+| Account type | Username / password |
+|---|---|
+| Owner | `owner / owner123` |
+| Admin | `admin / admin123` |
+| Agent | `agent1 / agent123` (Maria Santos), `agent2 / agent123` (Paolo Reyes) |
+
+Passwords are stored as SHA-256 hashes. New accounts are made in **Manage Users**, not on the login screen.
 
 Photos added in the app are copied into the project's `photos/` folder; only their paths are saved in MySQL and the
 folder is not uploaded to GitHub.

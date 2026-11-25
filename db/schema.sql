@@ -7,12 +7,18 @@ DROP DATABASE IF EXISTS hanapbahay;
 CREATE DATABASE hanapbahay;
 USE hanapbahay;
 
--- 3.4.1 Users: login accounts. Passwords are stored as SHA-256 hashes, never as plain text.
+-- 3.4.1 Users: login accounts of the Owner, Admins and Agents.
+-- Passwords are stored as SHA-256 hashes, never as plain text.
+-- There is no sign-up: the Owner account is created here (at installation); every other
+-- account is created inside the app by a user with higher authority (created_by).
 CREATE TABLE users (
     user_id        INT AUTO_INCREMENT PRIMARY KEY,
     username       VARCHAR(50) NOT NULL UNIQUE,
     password_hash  CHAR(64)    NOT NULL,
-    role           ENUM('ADMIN', 'AGENT') NOT NULL DEFAULT 'AGENT'
+    role           ENUM('OWNER', 'ADMIN', 'AGENT') NOT NULL DEFAULT 'AGENT',
+    is_active      TINYINT(1)  NOT NULL DEFAULT 1,       -- 0 = deactivated, cannot log in
+    created_by     INT NULL,                             -- the user who created this account
+    FOREIGN KEY (created_by) REFERENCES users(user_id)
 );
 
 -- 3.4.2 Agents: the profile of each agent account
@@ -104,15 +110,19 @@ CREATE TABLE deals (
 );
 
 -- ===================== Sample data for testing =====================
--- Passwords: admin / admin123, agent1 / agent123, agent2 / agent123 (stored as SHA-256 hashes)
-INSERT INTO users (username, password_hash, role) VALUES
-    ('admin',  '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN'),
-    ('agent1', 'f44d1ac9bf0c69b083380b86dbdf3b73797150e3cca4820ac399f7917e607647', 'AGENT'),
-    ('agent2', 'f44d1ac9bf0c69b083380b86dbdf3b73797150e3cca4820ac399f7917e607647', 'AGENT');
+-- Passwords: owner / owner123, admin / admin123, agent1 / agent123, agent2 / agent123
+-- (stored as SHA-256 hashes). The owner is created first; the owner created the admin,
+-- and the admin created the two agents.
+INSERT INTO users (username, password_hash, role, created_by) VALUES
+    ('owner',  '43a0d17178a9d26c9e0fe9a74b0b45e38d32f27aed887a008a54bf6e033bf7b9', 'OWNER', NULL);
+INSERT INTO users (username, password_hash, role, created_by) VALUES
+    ('admin',  '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN', 1),
+    ('agent1', 'f44d1ac9bf0c69b083380b86dbdf3b73797150e3cca4820ac399f7917e607647', 'AGENT', 2),
+    ('agent2', 'f44d1ac9bf0c69b083380b86dbdf3b73797150e3cca4820ac399f7917e607647', 'AGENT', 2);
 
 INSERT INTO agents (user_id, first_name, last_name, contact_number, email) VALUES
-    (2, 'Maria', 'Santos', '0917 123 4567', 'maria.santos@hanapbahay.ph'),
-    (3, 'Paolo', 'Reyes',  '0918 765 4321', 'paolo.reyes@hanapbahay.ph');
+    (3, 'Maria', 'Santos', '0917 123 4567', 'maria.santos@hanapbahay.ph'),
+    (4, 'Paolo', 'Reyes',  '0918 765 4321', 'paolo.reyes@hanapbahay.ph');
 
 INSERT INTO payment_methods (method_name, description) VALUES
     ('PAG-IBIG',       'Housing loan through the Pag-IBIG Fund'),

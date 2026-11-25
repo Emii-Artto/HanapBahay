@@ -30,8 +30,7 @@ public class MySqlUserDao extends MySqlBaseDao implements UserDao {
 			ps.setString(1, username);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				return new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password_hash"),
-						rs.getString("role"));
+				return toUser(rs);
 			}
 		} catch (SQLException e) {
 			printError("Find user", e);
@@ -41,20 +40,107 @@ public class MySqlUserDao extends MySqlBaseDao implements UserDao {
 		return null;
 	}
 
+	@Override
+	public User findById(int userId) {
+		Connection conn = DBConnection.getConnection();
+		if (conn == null) {
+			return null;
+		}
+		try {
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE user_id = ?");
+			ps.setInt(1, userId);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				return toUser(rs);
+			}
+		} catch (SQLException e) {
+			printError("Find user", e);
+		} finally {
+			close(conn);
+		}
+		return null;
+	}
+
+	/** Every account, the Owner first, then Admins, then Agents. */
+	@Override
+	public ArrayList<User> getAllUsers() {
+		ArrayList<User> users = new ArrayList<User>();
+		Connection conn = DBConnection.getConnection();
+		if (conn == null) {
+			return users;
+		}
+		try {
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM users ORDER BY role, username");
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				users.add(toUser(rs));
+			}
+		} catch (SQLException e) {
+			printError("Get users", e);
+		} finally {
+			close(conn);
+		}
+		return users;
+	}
+
+	private User toUser(ResultSet rs) throws SQLException {
+		return new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password_hash"),
+				rs.getString("role"), rs.getBoolean("is_active"), rs.getInt("created_by"));
+	}
+
+	@Override
+	public boolean setActive(int userId, boolean active) {
+		Connection conn = DBConnection.getConnection();
+		if (conn == null) {
+			return false;
+		}
+		try {
+			PreparedStatement ps = conn.prepareStatement("UPDATE users SET is_active = ? WHERE user_id = ?");
+			ps.setBoolean(1, active);
+			ps.setInt(2, userId);
+			return ps.executeUpdate() > 0;
+		} catch (SQLException e) {
+			printError("Change account status", e);
+			return false;
+		} finally {
+			close(conn);
+		}
+	}
+
+	@Override
+	public boolean updatePassword(int userId, String passwordHash) {
+		Connection conn = DBConnection.getConnection();
+		if (conn == null) {
+			return false;
+		}
+		try {
+			PreparedStatement ps = conn.prepareStatement("UPDATE users SET password_hash = ? WHERE user_id = ?");
+			ps.setString(1, passwordHash);
+			ps.setInt(2, userId);
+			return ps.executeUpdate() > 0;
+		} catch (SQLException e) {
+			printError("Reset password", e);
+			return false;
+		} finally {
+			close(conn);
+		}
+	}
+
 	/** Saves a new login account. Returns the new user_id, or 0 if it failed. */
 	@Override
-	public int addAccount(String username, String passwordHash, String role) {
+	public int addAccount(String username, String passwordHash, String role, int createdBy) {
 		Connection conn = DBConnection.getConnection();
 		if (conn == null) {
 			return 0;
 		}
 		try {
 			PreparedStatement ps = conn.prepareStatement(
-					"INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
+					"INSERT INTO users (username, password_hash, role, created_by) VALUES (?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, username);
 			ps.setString(2, passwordHash);
 			ps.setString(3, role);
+			ps.setInt(4, createdBy);
 			ps.executeUpdate();
 			ResultSet keys = ps.getGeneratedKeys();
 			if (keys.next()) {

@@ -21,8 +21,9 @@ import com.hanapbahay.model.User;
 import login.LoginFrame;
 
 /**
- * The Admin's window (an extra, not in the paper): an overview of ALL agents and the
- * reports for all agents. The admin does not manage listings, clients, viewings or deals.
+ * The window of the Owner and the Admins (3.2.1): Overview of all agents, Manage Users
+ * (3.1.9) and the reports for all agents. They do not manage listings, clients, viewings
+ * or deals; that is the agents' work.
  */
 public class AdminDashboard extends JFrame {
 
@@ -31,9 +32,12 @@ public class AdminDashboard extends JFrame {
 	private JPanel pnlContent;
 	private JLabel lblPageTitle;
 	private JLabel lblAdminName;
+	private JLabel lblAdminRole;
 	private AppButton btnOverview;
+	private AppButton btnUsers;
 	private AppButton btnReports;
 	private AdminOverviewPanel overviewPanel;
+	private ManageUsersPanel usersPanel;
 	private ReportsPanel reportsPanel;
 
 	public AdminDashboard() {
@@ -57,7 +61,7 @@ public class AdminDashboard extends JFrame {
 
 		JPanel pnlNav = new JPanel();
 		pnlNav.setOpaque(false);
-		pnlNav.setPreferredSize(new Dimension(240, 220));
+		pnlNav.setPreferredSize(new Dimension(240, 270));
 		pnlSidebar.add(pnlNav, BorderLayout.NORTH);
 		pnlNav.setLayout(null);
 
@@ -77,20 +81,30 @@ public class AdminDashboard extends JFrame {
 		btnOverview.setHorizontalAlignment(SwingConstants.LEFT);
 		btnOverview.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				openSection(true);
+				openSection("Overview");
 			}
 		});
 		btnOverview.setBounds(14, 100, 212, 44);
 		pnlNav.add(btnOverview);
 
+		btnUsers = new AppButton("   Manage Users", Theme.PANEL);
+		btnUsers.setHorizontalAlignment(SwingConstants.LEFT);
+		btnUsers.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openSection("Users");
+			}
+		});
+		btnUsers.setBounds(14, 150, 212, 44);
+		pnlNav.add(btnUsers);
+
 		btnReports = new AppButton("   Reports", Theme.PANEL);
 		btnReports.setHorizontalAlignment(SwingConstants.LEFT);
 		btnReports.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				openSection(false);
+				openSection("Reports");
 			}
 		});
-		btnReports.setBounds(14, 150, 212, 44);
+		btnReports.setBounds(14, 200, 212, 44);
 		pnlNav.add(btnReports);
 
 		JPanel pnlProfile = new JPanel();
@@ -105,7 +119,7 @@ public class AdminDashboard extends JFrame {
 		lblAdminName.setBounds(18, 10, 210, 20);
 		pnlProfile.add(lblAdminName);
 
-		JLabel lblAdminRole = new JLabel("System Administrator");
+		lblAdminRole = new JLabel("Administrator");
 		lblAdminRole.setFont(Theme.SMALL);
 		lblAdminRole.setForeground(Theme.MUTED);
 		lblAdminRole.setBounds(32, 32, 190, 16);
@@ -147,6 +161,7 @@ public class AdminDashboard extends JFrame {
 		btnRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				overviewPanel.refresh();
+				usersPanel.refresh();
 				reportsPanel.refresh();
 			}
 		});
@@ -160,26 +175,41 @@ public class AdminDashboard extends JFrame {
 		overviewPanel = new AdminOverviewPanel();
 		pnlContent.add(overviewPanel, "Overview");
 
+		usersPanel = new ManageUsersPanel();
+		pnlContent.add(usersPanel, "Users");
+
 		reportsPanel = new ReportsPanel();
 		pnlContent.add(reportsPanel, "Reports");
 	}
 
-	/** Called by LoginFrame after the admin logs in. */
+	/** Called by LoginFrame after the Owner or an Admin logs in. */
 	public void startSession(User user) {
+		setTitle("HanapBahay - " + user.getRoleLabel());
 		lblAdminName.setText("● " + user.getUsername());
+		lblAdminRole.setText(user.isOwner() ? "Owner (highest authority)" : "Administrator");
+		usersPanel.setActor(user);
 		reportsPanel.setAgent(null); // null = all agents
-		openSection(true);
+		openSection("Overview");
 	}
 
-	private void openSection(boolean overview) {
-		btnOverview.setBackground(overview ? Theme.ACTIVE : Theme.PANEL);
-		btnOverview.setForeground(overview ? Theme.GOLD_LIGHT : Theme.WHITE);
-		btnReports.setBackground(overview ? Theme.PANEL : Theme.ACTIVE);
-		btnReports.setForeground(overview ? Theme.WHITE : Theme.GOLD_LIGHT);
-		DashboardSection section = overview ? overviewPanel : reportsPanel;
-		section.refresh();
+	private void openSection(String name) {
+		highlight(btnOverview, "Overview".equals(name));
+		highlight(btnUsers, "Users".equals(name));
+		highlight(btnReports, "Reports".equals(name));
+		DashboardSection section = overviewPanel;
+		if ("Users".equals(name)) {
+			section = usersPanel;
+		} else if ("Reports".equals(name)) {
+			section = reportsPanel;
+		}
+		section.refresh(); // POLYMORPHISM: each panel's own refresh()
 		lblPageTitle.setText(section.getPageTitle());
-		((CardLayout) pnlContent.getLayout()).show(pnlContent, overview ? "Overview" : "Reports");
+		((CardLayout) pnlContent.getLayout()).show(pnlContent, name);
+	}
+
+	private void highlight(AppButton button, boolean active) {
+		button.setBackground(active ? Theme.ACTIVE : Theme.PANEL);
+		button.setForeground(active ? Theme.GOLD_LIGHT : Theme.WHITE);
 	}
 
 	private void logout() {

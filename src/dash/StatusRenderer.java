@@ -9,7 +9,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  * Colors a status cell like a badge (from the UI member's design):
- * green = Available / Completed, amber = Reserved / Pending / Scheduled, gray = Sold / Cancelled.
+ * green = Available / Completed / Active, amber = Reserved / Pending / Scheduled,
+ * gray = Sold / Cancelled / Deactivated.
  */
 public class StatusRenderer extends DefaultTableCellRenderer {
 
@@ -22,7 +23,7 @@ public class StatusRenderer extends DefaultTableCellRenderer {
 		String status = value == null ? "" : value.toString();
 		setHorizontalAlignment(SwingConstants.CENTER);
 		setFont(Theme.BODY_BOLD);
-		if ("Available".equals(status) || "Completed".equals(status)) {
+		if ("Available".equals(status) || "Completed".equals(status) || "Active".equals(status)) {
 			setBackground(new Color(36, 88, 66));
 			setForeground(new Color(145, 230, 179));
 		} else if ("Reserved".equals(status) || "Pending".equals(status) || "Scheduled".equals(status)) {

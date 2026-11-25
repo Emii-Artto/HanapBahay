@@ -13,10 +13,18 @@ public interface UserDao {
 
 	User findByUsername(String username);
 
+	User findById(int userId);
+
+	ArrayList<User> getAllUsers();
+
 	/** Saves a new login account. Returns the new user_id, or 0 if it failed. */
-	int addAccount(String username, String passwordHash, String role);
+	int addAccount(String username, String passwordHash, String role, int createdBy);
 
 	boolean deleteAccount(int userId);
+
+	boolean setActive(int userId, boolean active);
+
+	boolean updatePassword(int userId, String passwordHash);
 
 	Agent findAgentByUserId(int userId);
 

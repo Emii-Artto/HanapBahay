@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -44,6 +43,7 @@ public class LoginFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private static final String AGENT = "Agent";
 	private static final String ADMIN = "Admin";
+	private static final String OWNER = "Owner";
 
 	private JPanel contentPane;
 	private AppComboBox<String> cboAccountType;
@@ -134,6 +134,7 @@ public class LoginFrame extends JFrame {
 		cboAccountType = new AppComboBox<String>();
 		cboAccountType.addItem(AGENT);
 		cboAccountType.addItem(ADMIN);
+		cboAccountType.addItem(OWNER);
 		cboAccountType.setBounds(40, 136, 350, 38);
 		pnlCard.add(cboAccountType);
 
@@ -177,27 +178,13 @@ public class LoginFrame extends JFrame {
 		pnlCard.add(btnSignIn);
 		getRootPane().setDefaultButton(btnSignIn); // pressing Enter clicks SIGN IN
 
-		JLabel lblNewAgent = new JLabel("New agent?");
-		lblNewAgent.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblNewAgent.setFont(Theme.BODY);
-		lblNewAgent.setForeground(Theme.MUTED);
-		lblNewAgent.setBounds(40, 426, 160, 22);
-		pnlCard.add(lblNewAgent);
-
-		JButton btnCreateAccount = new JButton("CREATE ACCOUNT");
-		btnCreateAccount.setFont(Theme.SMALL_BOLD);
-		btnCreateAccount.setForeground(Theme.GOLD);
-		btnCreateAccount.setBackground(Theme.PANEL);
-		btnCreateAccount.setBorder(null);
-		btnCreateAccount.setFocusPainted(false);
-		btnCreateAccount.setHorizontalAlignment(SwingConstants.LEFT);
-		btnCreateAccount.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				openCreateAccount();
-			}
-		});
-		btnCreateAccount.setBounds(208, 426, 150, 22);
-		pnlCard.add(btnCreateAccount);
+		// No sign-up here: accounts are given by the Owner or an Admin (3.1.9)
+		JLabel lblNoAccount = new JLabel("No account? Ask your administrator for one.");
+		lblNoAccount.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNoAccount.setFont(Theme.BODY);
+		lblNoAccount.setForeground(Theme.MUTED);
+		lblNoAccount.setBounds(40, 426, 350, 22);
+		pnlCard.add(lblNoAccount);
 
 		JLabel lblAuthorized = new JLabel("AUTHORIZED USERS ONLY");
 		lblAuthorized.setHorizontalAlignment(SwingConstants.CENTER);
@@ -215,16 +202,16 @@ public class LoginFrame extends JFrame {
 			JOptionPane.showMessageDialog(this, service.getMessage(), "Cannot log in", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		boolean wantsAdmin = ADMIN.equals(cboAccountType.getSelectedItem());
-		if (user.isAdmin() != wantsAdmin) {
+		// the chosen account type must match the account's role ("Agent", "Admin" or "Owner")
+		if (!user.getRoleLabel().equals(cboAccountType.getSelectedItem())) {
 			JOptionPane.showMessageDialog(this,
-					"This is " + (user.isAdmin() ? "an Admin" : "an Agent") + " account.\nPlease choose \""
-							+ (user.isAdmin() ? ADMIN : AGENT) + "\" as the account type.",
+					"This is " + (user.isAgent() ? "an " : "the ") + user.getRoleLabel() + " account.\nPlease choose \""
+							+ user.getRoleLabel() + "\" as the account type.",
 					"Wrong account type", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		if (user.isAdmin()) {
+		if (user.canManageAgents()) { // Owner and Admins
 			AdminDashboard admin = new AdminDashboard();
 			admin.startSession(user);
 			admin.setVisible(true);
@@ -240,17 +227,5 @@ public class LoginFrame extends JFrame {
 			main.setVisible(true);
 		}
 		dispose(); // close the login window
-	}
-
-	private void openCreateAccount() {
-		RegisterDialog dialog = new RegisterDialog();
-		dialog.setLocationRelativeTo(this);
-		dialog.setVisible(true); // waits here until the dialog is closed (modal)
-		if (dialog.getCreatedUsername() != null) {
-			cboAccountType.setSelectedItem(AGENT);
-			txtUsername.setText(dialog.getCreatedUsername());
-			txtPassword.setText("");
-			txtPassword.requestFocus();
-		}
 	}
 }

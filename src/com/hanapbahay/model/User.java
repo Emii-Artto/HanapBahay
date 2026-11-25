@@ -5,13 +5,19 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * 5.1.4 User - a login account (user ID, username, role and a PRIVATE password hash).
+ * 5.1.4 User - a login account: user ID, username, role, active status and a PRIVATE password hash.
+ *
+ * Roles, from the highest authority down:
+ *   OWNER - created once at installation; manages Admins and Agents; cannot be deactivated
+ *   ADMIN - manages Agents and sees all reports; cannot create or remove Admins
+ *   AGENT - manages their own properties, clients, viewings and deals
  *
  * ENCAPSULATION: there is no getter for the password hash. Other classes can only ask
  * checkPassword("typed password"), which answers true or false.
  */
 public class User {
 
+	public static final String OWNER = "OWNER";
 	public static final String ADMIN = "ADMIN";
 	public static final String AGENT = "AGENT";
 
@@ -19,12 +25,16 @@ public class User {
 	private String username;
 	private String passwordHash; // SHA-256, never plain text
 	private String role;
+	private boolean active;
+	private int createdBy; // user_id of the account that created this one (0 = created at installation)
 
-	public User(int userId, String username, String passwordHash, String role) {
+	public User(int userId, String username, String passwordHash, String role, boolean active, int createdBy) {
 		this.userId = userId;
 		this.username = username;
 		this.passwordHash = passwordHash;
 		this.role = role;
+		this.active = active;
+		this.createdBy = createdBy;
 	}
 
 	// Verifies a typed password without exposing the stored hash
@@ -35,8 +45,33 @@ public class User {
 		return passwordHash.equals(hash(typedPassword));
 	}
 
+	// ---- what this account is allowed to do (role-based access, 3.3.2) ----
+
+	public boolean isOwner() {
+		return OWNER.equals(role);
+	}
+
 	public boolean isAdmin() {
 		return ADMIN.equals(role);
+	}
+
+	public boolean isAgent() {
+		return AGENT.equals(role);
+	}
+
+	/** Owner and Admins use the Admin dashboard and can add, reset and deactivate Agents. */
+	public boolean canManageAgents() {
+		return isOwner() || isAdmin();
+	}
+
+	/** Only the Owner can add, deactivate or reactivate Admins. */
+	public boolean canManageAdmins() {
+		return isOwner();
+	}
+
+	/** The role in normal words, e.g. "Owner". */
+	public String getRoleLabel() {
+		return role.substring(0, 1) + role.substring(1).toLowerCase();
 	}
 
 	/** Turns a password into its SHA-256 hash (64 hex characters). */
@@ -69,6 +104,18 @@ public class User {
 
 	public String getRole() {
 		return role;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public int getCreatedBy() {
+		return createdBy;
 	}
 
 	@Override
