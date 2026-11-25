@@ -4,109 +4,186 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
-import com.hanapbahay.dao.DBConnection;
-import com.hanapbahay.dao.UserDao;
-import com.hanapbahay.model.Admin;
 import com.hanapbahay.model.Agent;
 import com.hanapbahay.model.User;
 
-public class MySqlUserDao implements UserDao {
+import com.hanapbahay.dao.DBConnection;
+import com.hanapbahay.dao.UserDao;
+
+/**
+ * UserDAO - handles login accounts (users table) and agent profiles (agents table).
+ * Every query uses a PreparedStatement with ? so typed text can never change the SQL.
+ */
+public class MySqlUserDao extends MySqlBaseDao implements UserDao {
 
 	@Override
 	public User findByUsername(String username) {
-		User user = null;
 		Connection conn = DBConnection.getConnection();
 		if (conn == null) {
-			return null; // database is not reachable
+			return null;
 		}
 		try {
 			PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE username = ?");
 			ps.setString(1, username);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				user = toUser(rs);
+				return new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password_hash"),
+						rs.getString("role"));
 			}
-			conn.close();
 		} catch (SQLException e) {
-			System.out.println("findByUsername failed: " + e.getMessage());
+			printError("Find user", e);
+		} finally {
+			close(conn);
 		}
-		return user;
+		return null;
+	}
+
+	/** Saves a new login account. Returns the new user_id, or 0 if it failed. */
+	@Override
+	public int addAccount(String username, String passwordHash, String role) {
+		Connection conn = DBConnection.getConnection();
+		if (conn == null) {
+			return 0;
+		}
+		try {
+			PreparedStatement ps = conn.prepareStatement(
+					"INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
+					Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, username);
+			ps.setString(2, passwordHash);
+			ps.setString(3, role);
+			ps.executeUpdate();
+			ResultSet keys = ps.getGeneratedKeys();
+			if (keys.next()) {
+				return keys.getInt(1);
+			}
+		} catch (SQLException e) {
+			printError("Add account", e);
+		} finally {
+			close(conn);
+		}
+		return 0;
 	}
 
 	@Override
-	public User findById(int userId) {
-		User user = null;
+	public boolean deleteAccount(int userId) {
+		Connection conn = DBConnection.getConnection();
+		if (conn == null) {
+			return false;
+		}
+		try {
+			PreparedStatement ps = conn.prepareStatement("DELETE FROM users WHERE user_id = ?");
+			ps.setInt(1, userId);
+			return ps.executeUpdate() > 0;
+		} catch (SQLException e) {
+			printError("Delete account", e);
+			return false;
+		} finally {
+			close(conn);
+		}
+	}
+
+	// ---------------- agent profiles ----------------
+
+	@Override
+	public Agent findAgentByUserId(int userId) {
 		Connection conn = DBConnection.getConnection();
 		if (conn == null) {
 			return null;
 		}
 		try {
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE user_id = ?");
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM agents WHERE user_id = ?");
 			ps.setInt(1, userId);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				user = toUser(rs);
+				return toAgent(rs);
 			}
-			conn.close();
 		} catch (SQLException e) {
-			System.out.println("findById failed: " + e.getMessage());
+			printError("Find agent", e);
+		} finally {
+			close(conn);
 		}
-		return user;
+		return null;
 	}
 
 	@Override
-	public ArrayList<User> findAll() {
-		ArrayList<User> users = new ArrayList<User>();
+	public ArrayList<Agent> getAllAgents() {
+		ArrayList<Agent> agents = new ArrayList<Agent>();
 		Connection conn = DBConnection.getConnection();
 		if (conn == null) {
-			return users; // empty list
+			return agents;
 		}
 		try {
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM users ORDER BY user_id");
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM agents ORDER BY last_name, first_name");
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				users.add(toUser(rs));
+				agents.add(toAgent(rs));
 			}
-			conn.close();
 		} catch (SQLException e) {
-			System.out.println("findAll failed: " + e.getMessage());
+			printError("Get agents", e);
+		} finally {
+			close(conn);
 		}
-		return users;
+		return agents;
 	}
 
 	@Override
-	public void add(User user) {
+	public boolean addAgent(Agent agent) {
 		Connection conn = DBConnection.getConnection();
 		if (conn == null) {
-			return;
+			return false;
 		}
 		try {
 			PreparedStatement ps = conn.prepareStatement(
-					"INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)");
-			ps.setString(1, user.getUsername());
-			ps.setString(2, user.getPassword());
-			ps.setString(3, user.getFullName());
-			ps.setString(4, user.getRole());
+					"INSERT INTO agents (user_id, first_name, last_name, contact_number, email) VALUES (?, ?, ?, ?, ?)",
+					Statement.RETURN_GENERATED_KEYS);
+			ps.setInt(1, agent.getUserId());
+			ps.setString(2, agent.getFirstName());
+			ps.setString(3, agent.getLastName());
+			ps.setString(4, agent.getContactNumber());
+			ps.setString(5, agent.getEmail());
 			ps.executeUpdate();
-			conn.close();
+			ResultSet keys = ps.getGeneratedKeys();
+			if (keys.next()) {
+				agent.setAgentId(keys.getInt(1));
+			}
+			return true;
 		} catch (SQLException e) {
-			System.out.println("add user failed: " + e.getMessage());
+			printError("Add agent", e);
+			return false;
+		} finally {
+			close(conn);
 		}
 	}
 
-	private User toUser(ResultSet rs) throws SQLException {
-		int id = rs.getInt("user_id");
-		String username = rs.getString("username");
-		String password = rs.getString("password");
-		String fullName = rs.getString("full_name");
-		String role = rs.getString("role");
-
-		if (role.equals("ADMIN")) {
-			return new Admin(id, username, password, fullName);
-		} else {
-			return new Agent(id, username, password, fullName);
+	@Override
+	public boolean updateAgent(Agent agent) {
+		Connection conn = DBConnection.getConnection();
+		if (conn == null) {
+			return false;
 		}
+		try {
+			PreparedStatement ps = conn.prepareStatement(
+					"UPDATE agents SET first_name = ?, last_name = ?, contact_number = ?, email = ? WHERE agent_id = ?");
+			ps.setString(1, agent.getFirstName());
+			ps.setString(2, agent.getLastName());
+			ps.setString(3, agent.getContactNumber());
+			ps.setString(4, agent.getEmail());
+			ps.setInt(5, agent.getAgentId());
+			return ps.executeUpdate() > 0;
+		} catch (SQLException e) {
+			printError("Update agent", e);
+			return false;
+		} finally {
+			close(conn);
+		}
+	}
+
+	private Agent toAgent(ResultSet rs) throws SQLException {
+		return new Agent(rs.getInt("agent_id"), rs.getInt("user_id"), rs.getString("first_name"),
+				rs.getString("last_name"), rs.getString("contact_number"), rs.getString("email"));
 	}
 }

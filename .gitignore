@@ -3,6 +3,9 @@ bin/
 out/
 *.class
 
+# Property photos added in the app (each computer has its own; only the paths are in MySQL)
+photos/
+
 # Eclipse workspace metadata (each person has their own)
 .metadata/
 *.launch
