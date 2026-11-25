@@ -160,7 +160,7 @@ public class MainDashboard extends JFrame {
 
 		JPanel pnlProfile = new JPanel();
 		pnlProfile.setOpaque(false);
-		pnlProfile.setPreferredSize(new Dimension(240, 130));
+		pnlProfile.setPreferredSize(new Dimension(240, 170));
 		pnlSidebar.add(pnlProfile, BorderLayout.SOUTH);
 		pnlProfile.setLayout(null);
 
@@ -176,13 +176,22 @@ public class MainDashboard extends JFrame {
 		lblAgentRole.setBounds(32, 32, 190, 16);
 		pnlProfile.add(lblAgentRole);
 
+		AppButton btnChangePassword = new AppButton("Change Password", Theme.GRAY);
+		btnChangePassword.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				changePassword();
+			}
+		});
+		btnChangePassword.setBounds(14, 60, 212, 36);
+		pnlProfile.add(btnChangePassword);
+
 		AppButton btnLogout = new AppButton("Log Out");
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				logout();
 			}
 		});
-		btnLogout.setBounds(14, 64, 212, 42);
+		btnLogout.setBounds(14, 104, 212, 42);
 		pnlProfile.add(btnLogout);
 
 		// ================= MAIN AREA =================
@@ -323,6 +332,13 @@ public class MainDashboard extends JFrame {
 		pnlSidebar.setVisible(true);
 		btnClientMode.setText("● Start Client Browse Mode");
 		openSection(currentSection);
+	}
+
+	private void changePassword() {
+		ChangePasswordDialog dialog = new ChangePasswordDialog();
+		dialog.setUser(user, false);
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 
 	private void logout() {

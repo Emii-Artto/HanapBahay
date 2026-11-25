@@ -85,7 +85,8 @@ public class MySqlUserDao extends MySqlBaseDao implements UserDao {
 
 	private User toUser(ResultSet rs) throws SQLException {
 		return new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("password_hash"),
-				rs.getString("role"), rs.getBoolean("is_active"), rs.getInt("created_by"));
+				rs.getString("role"), rs.getBoolean("is_active"), rs.getBoolean("must_change_password"),
+				rs.getInt("created_by"));
 	}
 
 	@Override
@@ -108,15 +109,17 @@ public class MySqlUserDao extends MySqlBaseDao implements UserDao {
 	}
 
 	@Override
-	public boolean updatePassword(int userId, String passwordHash) {
+	public boolean updatePassword(int userId, String passwordHash, boolean mustChange) {
 		Connection conn = DBConnection.getConnection();
 		if (conn == null) {
 			return false;
 		}
 		try {
-			PreparedStatement ps = conn.prepareStatement("UPDATE users SET password_hash = ? WHERE user_id = ?");
+			PreparedStatement ps = conn.prepareStatement(
+					"UPDATE users SET password_hash = ?, must_change_password = ? WHERE user_id = ?");
 			ps.setString(1, passwordHash);
-			ps.setInt(2, userId);
+			ps.setBoolean(2, mustChange);
+			ps.setInt(3, userId);
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
 			printError("Reset password", e);
@@ -135,7 +138,8 @@ public class MySqlUserDao extends MySqlBaseDao implements UserDao {
 		}
 		try {
 			PreparedStatement ps = conn.prepareStatement(
-					"INSERT INTO users (username, password_hash, role, created_by) VALUES (?, ?, ?, ?)",
+					"INSERT INTO users (username, password_hash, role, must_change_password, created_by) "
+							+ "VALUES (?, ?, ?, 1, ?)", // 1 = the temporary password must be changed at first login
 					Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, username);
 			ps.setString(2, passwordHash);

@@ -97,7 +97,8 @@ public class UserService extends BaseService {
 			return false;
 		}
 		message = "Agent account \"" + username.trim() + "\" created for " + agent.getFullName()
-				+ ".\nGive the agent the username and the temporary password.";
+				+ ".\nGive the agent the username and the temporary password.\n"
+				+ "They must choose their own password at the first login.";
 		return true;
 	}
 
@@ -115,7 +116,8 @@ public class UserService extends BaseService {
 			message = "Cannot save the account. Please check the database connection.";
 			return false;
 		}
-		message = "Admin account \"" + username.trim() + "\" created.";
+		message = "Admin account \"" + username.trim() + "\" created.\n"
+				+ "They must choose their own password at the first login.";
 		return true;
 	}
 
@@ -133,11 +135,51 @@ public class UserService extends BaseService {
 			message = "The passwords do not match.";
 			return false;
 		}
-		if (!userDAO.updatePassword(userId, User.hash(password))) {
+		// a reset password is temporary: the user must choose a new one at the next login
+		if (!userDAO.updatePassword(userId, User.hash(password), true)) {
 			message = "Cannot save the new password. Please check the database connection.";
 			return false;
 		}
-		message = "The password of \"" + target.getUsername() + "\" was reset.";
+		message = "The password of \"" + target.getUsername() + "\" was reset.\n"
+				+ "They must choose a new password the next time they log in.";
+		return true;
+	}
+
+	/**
+	 * Change My Password: any logged-in user changes their own password.
+	 * The current password must be typed again, so nobody can change it from a computer left logged in.
+	 */
+	public boolean changeOwnPassword(User user, String currentPassword, String newPassword, String confirmPassword) {
+		if (user == null) {
+			message = "No user is logged in.";
+			return false;
+		}
+		if (isBlank(currentPassword) || isBlank(newPassword) || isBlank(confirmPassword)) {
+			message = "Please fill in all three password fields.";
+			return false;
+		}
+		if (!user.checkPassword(currentPassword)) {
+			message = "Your current password is wrong.";
+			return false;
+		}
+		if (newPassword.length() < 6) {
+			message = "The new password must have at least 6 characters.";
+			return false;
+		}
+		if (!newPassword.equals(confirmPassword)) {
+			message = "The new passwords do not match.";
+			return false;
+		}
+		if (newPassword.equals(currentPassword)) {
+			message = "The new password must be different from the current one.";
+			return false;
+		}
+		if (!userDAO.updatePassword(user.getUserId(), User.hash(newPassword), false)) {
+			message = "Cannot save the new password. Please check the database connection.";
+			return false;
+		}
+		user.setNewPassword(newPassword); // keep the logged-in User object up to date
+		message = "Your password was changed.";
 		return true;
 	}
 

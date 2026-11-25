@@ -17,6 +17,7 @@ CREATE TABLE users (
     password_hash  CHAR(64)    NOT NULL,
     role           ENUM('OWNER', 'ADMIN', 'AGENT') NOT NULL DEFAULT 'AGENT',
     is_active      TINYINT(1)  NOT NULL DEFAULT 1,       -- 0 = deactivated, cannot log in
+    must_change_password TINYINT(1) NOT NULL DEFAULT 1,  -- 1 = temporary password, change at next login
     created_by     INT NULL,                             -- the user who created this account
     FOREIGN KEY (created_by) REFERENCES users(user_id)
 );
@@ -113,12 +114,14 @@ CREATE TABLE deals (
 -- Passwords: owner / owner123, admin / admin123, agent1 / agent123, agent2 / agent123
 -- (stored as SHA-256 hashes). The owner is created first; the owner created the admin,
 -- and the admin created the two agents.
-INSERT INTO users (username, password_hash, role, created_by) VALUES
-    ('owner',  '43a0d17178a9d26c9e0fe9a74b0b45e38d32f27aed887a008a54bf6e033bf7b9', 'OWNER', NULL);
-INSERT INTO users (username, password_hash, role, created_by) VALUES
-    ('admin',  '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN', 1),
-    ('agent1', 'f44d1ac9bf0c69b083380b86dbdf3b73797150e3cca4820ac399f7917e607647', 'AGENT', 2),
-    ('agent2', 'f44d1ac9bf0c69b083380b86dbdf3b73797150e3cca4820ac399f7917e607647', 'AGENT', 2);
+-- owner123 is only a starting password: the Owner must choose a new one at the first login.
+-- (The sample admin and agents keep their passwords so the group can test quickly.)
+INSERT INTO users (username, password_hash, role, must_change_password, created_by) VALUES
+    ('owner',  '43a0d17178a9d26c9e0fe9a74b0b45e38d32f27aed887a008a54bf6e033bf7b9', 'OWNER', 1, NULL);
+INSERT INTO users (username, password_hash, role, must_change_password, created_by) VALUES
+    ('admin',  '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN', 0, 1),
+    ('agent1', 'f44d1ac9bf0c69b083380b86dbdf3b73797150e3cca4820ac399f7917e607647', 'AGENT', 0, 2),
+    ('agent2', 'f44d1ac9bf0c69b083380b86dbdf3b73797150e3cca4820ac399f7917e607647', 'AGENT', 0, 2);
 
 INSERT INTO agents (user_id, first_name, last_name, contact_number, email) VALUES
     (3, 'Maria', 'Santos', '0917 123 4567', 'maria.santos@hanapbahay.ph'),

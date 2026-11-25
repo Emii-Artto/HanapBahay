@@ -30,6 +30,7 @@ import dash.AppComboBox;
 import dash.AppPasswordField;
 import dash.AppTextField;
 import dash.CaptionLabel;
+import dash.ChangePasswordDialog;
 import dash.MainDashboard;
 import dash.Theme;
 
@@ -209,6 +210,21 @@ public class LoginFrame extends JFrame {
 							+ user.getRoleLabel() + "\" as the account type.",
 					"Wrong account type", JOptionPane.WARNING_MESSAGE);
 			return;
+		}
+
+		// a temporary password (the Owner's starting password, or one made or reset in Manage Users)
+		// must be replaced before the user can continue
+		if (user.mustChangePassword()) {
+			ChangePasswordDialog dialog = new ChangePasswordDialog();
+			dialog.setUser(user, true);
+			dialog.setLocationRelativeTo(this);
+			dialog.setVisible(true);
+			if (!dialog.wasChanged()) {
+				JOptionPane.showMessageDialog(this, "You must choose a new password before you can continue.",
+						"Temporary password", JOptionPane.WARNING_MESSAGE);
+				txtPassword.setText("");
+				return;
+			}
 		}
 
 		if (user.canManageAgents()) { // Owner and Admins

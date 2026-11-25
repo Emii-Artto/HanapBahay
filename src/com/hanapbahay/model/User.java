@@ -26,14 +26,17 @@ public class User {
 	private String passwordHash; // SHA-256, never plain text
 	private String role;
 	private boolean active;
+	private boolean mustChangePassword; // true = still using a temporary password
 	private int createdBy; // user_id of the account that created this one (0 = created at installation)
 
-	public User(int userId, String username, String passwordHash, String role, boolean active, int createdBy) {
+	public User(int userId, String username, String passwordHash, String role, boolean active,
+			boolean mustChangePassword, int createdBy) {
 		this.userId = userId;
 		this.username = username;
 		this.passwordHash = passwordHash;
 		this.role = role;
 		this.active = active;
+		this.mustChangePassword = mustChangePassword;
 		this.createdBy = createdBy;
 	}
 
@@ -43,6 +46,12 @@ public class User {
 			return false;
 		}
 		return passwordHash.equals(hash(typedPassword));
+	}
+
+	// ENCAPSULATION: the new password is hashed inside this class; the hash never leaves it
+	public void setNewPassword(String newPassword) {
+		this.passwordHash = hash(newPassword);
+		this.mustChangePassword = false;
 	}
 
 	// ---- what this account is allowed to do (role-based access, 3.3.2) ----
@@ -112,6 +121,10 @@ public class User {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public boolean mustChangePassword() {
+		return mustChangePassword;
 	}
 
 	public int getCreatedBy() {

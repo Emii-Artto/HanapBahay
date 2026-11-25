@@ -15,6 +15,8 @@ Three kinds of accounts, from the highest authority down. **There is no sign-up 
 | **Agent** | sales agent | Their own properties, clients, viewings, deals and reports. |
 
 - A deactivated account cannot log in, but its records are kept. Nobody can deactivate their own account.
+- Accounts made or reset in Manage Users get a **temporary password**; the user must choose their own at the first
+  login. Every user has **Change Password** in the sidebar (type the current password, then the new one twice).
 - Every account records who created it (`created_by`), so you can see who gave each person access.
 - **Buyers have no account.** In **Client Browse Mode** the agent hands the device to the buyer, who can only browse,
   search and filter *Available* properties and see their photos. Leaving the mode needs the agent's password.
@@ -40,7 +42,7 @@ dash/           MainDashboard (agents), AdminDashboard (Owner/Admin)        (JFr
                 DealsPanel, ReportsPanel, AdminOverviewPanel,
                 ManageUsersPanel                                            (JPanels, implement DashboardSection)
                 PropertyFormDialog, ClientFormDialog, ViewingFormDialog,
-                DealFormDialog, ProfileDialog, UserFormDialog,
+                DealFormDialog, ProfileDialog, UserFormDialog, ChangePasswordDialog,
                 PhotoGalleryDialog, MatchesDialog                           (JDialogs)
                 AppButton, AppTable, StatCard, HeroBanner, ... Theme        (reusable styled components)
 com.hanapbahay.service   UserService, PropertyService, ClientService, ViewingService,
@@ -74,7 +76,8 @@ below zero · login errors · at most 4 photos and each must be a real image · 
 at the same date and time · no second active deal for a property · a property or client with viewings or deals cannot
 be deleted · database problems show a message instead of crashing.
 **Accounts (5.3.9):** unique usernames without spaces · passwords of 6+ characters typed twice · only the Owner manages
-Admins · the Owner cannot be changed · nobody changes their own account in Manage Users · deactivated accounts cannot log in.
+Admins · the Owner cannot be changed · nobody changes their own account in Manage Users · deactivated accounts cannot log in ·
+changing a password needs the current one, and the new one must be different · temporary passwords must be changed at the first login.
 
 ## Setup (each member)
 
@@ -88,7 +91,7 @@ Test logins (choose the matching **Account type**):
 
 | Account type | Username / password |
 |---|---|
-| Owner | `owner / owner123` |
+| Owner | `owner / owner123` — a starting password: you must choose a new one at the first login |
 | Admin | `admin / admin123` |
 | Agent | `agent1 / agent123` (Maria Santos), `agent2 / agent123` (Paolo Reyes) |
 
