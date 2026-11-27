@@ -1,7 +1,10 @@
 package dash;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,7 +29,8 @@ import com.hanapbahay.service.ReportGenerator;
 
 /**
  * 3.1.1 Property Listing Management and 3.2.2 Property Search & Gallery Views
- * (UI member's Properties page: banner, number cards, filters and the Property Records table).
+ * (Properties page: heading with Add Property, number cards, filters and the property list).
+ * Each property is one row of the table, drawn as a card by ListingRenderer.
  *
  * The same panel is used in Client Browse Mode (3.2.4): setBrowseMode(true) shows only
  * Available properties, read-only, and hides the cards and the Add/Edit/Delete buttons.
@@ -59,16 +64,36 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 
 	public PropertiesPanel() {
 		setBackground(Theme.DARK);
-		setBorder(new EmptyBorder(18, 24, 18, 24));
-		setLayout(new BorderLayout(0, 12));
+		setBorder(new EmptyBorder(20, 28, 20, 28));
+		setLayout(new BorderLayout(0, 14));
 
 		JPanel pnlTop = new JPanel();
 		pnlTop.setOpaque(false);
 		add(pnlTop, BorderLayout.NORTH);
-		pnlTop.setLayout(new BorderLayout(0, 12));
+		pnlTop.setLayout(new BorderLayout(0, 14));
+
+		// ---- page heading, with Add Property on the right ----
+		JPanel pnlHeader = new JPanel();
+		pnlHeader.setOpaque(false);
+		pnlTop.add(pnlHeader, BorderLayout.NORTH);
+		pnlHeader.setLayout(new BorderLayout(12, 0));
 
 		banner = new HeroBanner();
-		pnlTop.add(banner, BorderLayout.NORTH);
+		pnlHeader.add(banner, BorderLayout.CENTER);
+
+		JPanel pnlHeaderButtons = new JPanel();
+		pnlHeaderButtons.setOpaque(false);
+		pnlHeader.add(pnlHeaderButtons, BorderLayout.EAST);
+		pnlHeaderButtons.setLayout(new GridBagLayout());
+
+		btnAdd = new AppButton("Add Property");
+		btnAdd.setIcon(new NavIcon(NavIcon.PLUS));
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openForm(null);
+			}
+		});
+		pnlHeaderButtons.add(btnAdd, new GridBagConstraints());
 
 		// ---- number cards ----
 		pnlCards = new JPanel();
@@ -77,44 +102,56 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 		pnlCards.setLayout(new GridLayout(1, 4, 14, 0));
 
 		cardProperties = new StatCard();
-		cardProperties.setIcon("⌂");
+		cardProperties.setIconType(NavIcon.PROPERTIES);
 		cardProperties.setTitle("Total Properties");
 		pnlCards.add(cardProperties);
 
 		cardClients = new StatCard();
-		cardClients.setIcon("●");
+		cardClients.setIconType(NavIcon.CLIENTS);
 		cardClients.setTitle("Total Clients");
 		cardClients.setNote("registered buyers");
 		pnlCards.add(cardClients);
 
 		cardViewings = new StatCard();
-		cardViewings.setIcon("■");
+		cardViewings.setIconType(NavIcon.VIEWING);
 		cardViewings.setTitle("Appointments");
 		cardViewings.setNote("upcoming viewings");
 		pnlCards.add(cardViewings);
 
 		cardDeals = new StatCard();
-		cardDeals.setIcon("₱");
+		cardDeals.setIconType(NavIcon.DEALS);
 		cardDeals.setTitle("Completed Deals");
 		pnlCards.add(cardDeals);
 
 		// ---- filters (5.4) ----
 		CardPanel pnlFilter = new CardPanel();
 		pnlTop.add(pnlFilter, BorderLayout.SOUTH);
-		pnlFilter.setLayout(new BorderLayout(0, 6));
+		pnlFilter.setLayout(new BorderLayout(0, 0));
 
+		// four rows: captions, fields, captions, fields (each row is 4 equal columns)
 		JPanel pnlFilterGrid = new JPanel();
 		pnlFilterGrid.setOpaque(false);
 		pnlFilter.add(pnlFilterGrid, BorderLayout.CENTER);
-		pnlFilterGrid.setLayout(new GridLayout(4, 4, 12, 3));
+		pnlFilterGrid.setLayout(new BoxLayout(pnlFilterGrid, BoxLayout.Y_AXIS));
 
-		pnlFilterGrid.add(new CaptionLabel("Keyword (title or location)"));
-		pnlFilterGrid.add(new CaptionLabel("Property type"));
-		pnlFilterGrid.add(new CaptionLabel("Subtype"));
-		pnlFilterGrid.add(new CaptionLabel("Location"));
+		JPanel pnlCaptions1 = new JPanel();
+		pnlCaptions1.setOpaque(false);
+		pnlFilterGrid.add(pnlCaptions1);
+		pnlCaptions1.setLayout(new GridLayout(1, 4, 14, 0));
+		pnlCaptions1.add(new CaptionLabel("Keyword (title or location)"));
+		pnlCaptions1.add(new CaptionLabel("Property type"));
+		pnlCaptions1.add(new CaptionLabel("Subtype"));
+		pnlCaptions1.add(new CaptionLabel("Location"));
+
+		JPanel pnlFields1 = new JPanel();
+		pnlFields1.setOpaque(false);
+		pnlFields1.setBorder(new EmptyBorder(5, 0, 12, 0));
+		pnlFilterGrid.add(pnlFields1);
+		pnlFields1.setLayout(new GridLayout(1, 4, 14, 0));
 
 		txtKeyword = new AppTextField();
-		pnlFilterGrid.add(txtKeyword);
+		txtKeyword.setPlaceholder("Search title or location");
+		pnlFields1.add(txtKeyword);
 
 		cboType = new AppComboBox<String>();
 		cboType.addItem(PropertyService.ALL);
@@ -126,36 +163,49 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 				fillSubtypes();
 			}
 		});
-		pnlFilterGrid.add(cboType);
+		pnlFields1.add(cboType);
 
 		cboSubtype = new AppComboBox<String>();
 		cboSubtype.addItem(PropertyService.ALL);
-		pnlFilterGrid.add(cboSubtype);
+		pnlFields1.add(cboSubtype);
 
 		txtLocation = new AppTextField();
-		pnlFilterGrid.add(txtLocation);
+		txtLocation.setPlaceholder("Any location");
+		pnlFields1.add(txtLocation);
 
-		pnlFilterGrid.add(new CaptionLabel("Min price"));
-		pnlFilterGrid.add(new CaptionLabel("Max price"));
-		pnlFilterGrid.add(new CaptionLabel("Status"));
-		pnlFilterGrid.add(new JLabel(""));
+		JPanel pnlCaptions2 = new JPanel();
+		pnlCaptions2.setOpaque(false);
+		pnlFilterGrid.add(pnlCaptions2);
+		pnlCaptions2.setLayout(new GridLayout(1, 4, 14, 0));
+		pnlCaptions2.add(new CaptionLabel("Min price"));
+		pnlCaptions2.add(new CaptionLabel("Max price"));
+		pnlCaptions2.add(new CaptionLabel("Status"));
+		pnlCaptions2.add(new JLabel(""));
+
+		JPanel pnlFields2 = new JPanel();
+		pnlFields2.setOpaque(false);
+		pnlFields2.setBorder(new EmptyBorder(5, 0, 0, 0));
+		pnlFilterGrid.add(pnlFields2);
+		pnlFields2.setLayout(new GridLayout(1, 4, 14, 0));
 
 		txtMinPrice = new AppTextField();
-		pnlFilterGrid.add(txtMinPrice);
+		txtMinPrice.setPlaceholder("e.g. 1,000,000");
+		pnlFields2.add(txtMinPrice);
 
 		txtMaxPrice = new AppTextField();
-		pnlFilterGrid.add(txtMaxPrice);
+		txtMaxPrice.setPlaceholder("e.g. 5,000,000");
+		pnlFields2.add(txtMaxPrice);
 
 		cboStatus = new AppComboBox<String>();
 		cboStatus.addItem(PropertyService.ALL);
 		cboStatus.addItem("Available");
 		cboStatus.addItem("Reserved");
 		cboStatus.addItem("Sold");
-		pnlFilterGrid.add(cboStatus);
+		pnlFields2.add(cboStatus);
 
 		JPanel pnlSearchButtons = new JPanel();
 		pnlSearchButtons.setOpaque(false);
-		pnlFilterGrid.add(pnlSearchButtons);
+		pnlFields2.add(pnlSearchButtons);
 		pnlSearchButtons.setLayout(new GridLayout(1, 2, 8, 0));
 
 		AppButton btnSearch = new AppButton("Search");
@@ -174,39 +224,30 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 		});
 		pnlSearchButtons.add(btnReset);
 
+		// ---- the property list ----
+		JPanel pnlList = new JPanel();
+		pnlList.setOpaque(false);
+		add(pnlList, BorderLayout.CENTER);
+		pnlList.setLayout(new BorderLayout(0, 8));
+
+		JPanel pnlToolbar = new JPanel();
+		pnlToolbar.setOpaque(false);
+		pnlList.add(pnlToolbar, BorderLayout.NORTH);
+		pnlToolbar.setLayout(new BorderLayout(12, 0));
+
 		lblResult = new JLabel(" ");
 		lblResult.setFont(Theme.BODY);
 		lblResult.setForeground(Theme.MUTED);
-		pnlFilter.add(lblResult, BorderLayout.SOUTH);
+		pnlToolbar.add(lblResult, BorderLayout.CENTER);
 
-		// ---- Property Records table ----
-		AppScrollPane scrollTable = new AppScrollPane();
-		add(scrollTable, BorderLayout.CENTER);
-
-		table = new AppTable();
-		tableModel = new ReadOnlyTableModel(
-				new String[] { "Photo", "ID", "Title", "Type", "Subtype", "Location", "Price", "Lot Area", "Status" });
-		table.setModel(tableModel);
-		table.setRowHeight(58);
-		table.getColumnModel().getColumn(0).setMaxWidth(90);
-		table.getColumnModel().getColumn(1).setMaxWidth(60);
-		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					openGallery(); // double-click a row to see its photos
-				}
-			}
-		});
-		scrollTable.setViewportView(table);
-
-		// ---- buttons ----
 		JPanel pnlButtons = new JPanel();
 		pnlButtons.setOpaque(false);
-		add(pnlButtons, BorderLayout.SOUTH);
-		pnlButtons.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+		pnlToolbar.add(pnlButtons, BorderLayout.EAST);
+		pnlButtons.setLayout(new FlowLayout(FlowLayout.RIGHT, 8, 0));
 
-		AppButton btnGallery = new AppButton("View Photos & Details", Theme.BLUE);
+		AppButton btnGallery = new AppButton("View Photos & Details", Theme.CARD);
+		btnGallery.setIcon(new NavIcon(NavIcon.PHOTO));
+		btnGallery.setOutline(Theme.CARD_BORDER);
 		btnGallery.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openGallery();
@@ -214,7 +255,9 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 		});
 		pnlButtons.add(btnGallery);
 
-		btnEdit = new AppButton("Edit", Theme.GRAY);
+		btnEdit = new AppButton("Edit", Theme.CARD);
+		btnEdit.setIcon(new NavIcon(NavIcon.EDIT));
+		btnEdit.setOutline(Theme.CARD_BORDER);
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Property selected = getSelected();
@@ -225,7 +268,10 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 		});
 		pnlButtons.add(btnEdit);
 
-		btnDelete = new AppButton("Delete", Theme.RED);
+		btnDelete = new AppButton("Delete", Theme.CARD);
+		btnDelete.setIcon(new NavIcon(NavIcon.DELETE));
+		btnDelete.setForeground(Theme.RED);
+		btnDelete.setOutline(Theme.CARD_BORDER);
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				deleteSelected();
@@ -233,13 +279,39 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 		});
 		pnlButtons.add(btnDelete);
 
-		btnAdd = new AppButton("+ Add Property");
-		btnAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				openForm(null);
+		AppScrollPane scrollTable = new AppScrollPane();
+		scrollTable.setBorder(new EmptyBorder(0, 0, 0, 0));
+		pnlList.add(scrollTable, BorderLayout.CENTER);
+
+		table = new AppTable();
+		tableModel = new ReadOnlyTableModel(
+				new String[] { "Photo", "Property", "Location and Price", "Type and Area", "Availability" });
+		table.setModel(tableModel);
+		table.setTableHeader(null); // every card already labels its values
+		table.setRowHeight(100);
+		table.setShowGrid(false);
+		table.setIntercellSpacing(new Dimension(0, 0));
+		table.getColumnModel().getColumn(0).setCellRenderer(new ListingRenderer(ListingRenderer.PHOTO));
+		table.getColumnModel().getColumn(1).setCellRenderer(new ListingRenderer(ListingRenderer.TITLE));
+		table.getColumnModel().getColumn(2).setCellRenderer(new ListingRenderer(ListingRenderer.DETAILS));
+		table.getColumnModel().getColumn(3).setCellRenderer(new ListingRenderer(ListingRenderer.DETAILS));
+		table.getColumnModel().getColumn(4).setCellRenderer(new ListingRenderer(ListingRenderer.STATUS));
+		table.getColumnModel().getColumn(0).setMinWidth(150);
+		table.getColumnModel().getColumn(0).setMaxWidth(150);
+		table.getColumnModel().getColumn(1).setPreferredWidth(280);
+		table.getColumnModel().getColumn(2).setPreferredWidth(220);
+		table.getColumnModel().getColumn(3).setPreferredWidth(220);
+		table.getColumnModel().getColumn(4).setMinWidth(140);
+		table.getColumnModel().getColumn(4).setMaxWidth(170);
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					openGallery(); // double-click a row to see its photos
+				}
 			}
 		});
-		pnlButtons.add(btnAdd);
+		scrollTable.setViewportView(table);
 	}
 
 	@Override
@@ -262,10 +334,10 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 		cboStatus.setEnabled(!browseMode);
 		if (browseMode) {
 			cboStatus.setSelectedItem("Available");
-			banner.setTitle("AVAILABLE PROPERTIES");
+			banner.setTitle("Available Properties");
 			banner.setSubtitle("Search and filter, then double-click a property to see its photos.");
 		} else {
-			banner.setTitle("PROPERTY LISTINGS");
+			banner.setTitle("Property Listings");
 			banner.setSubtitle("Manage and organize your property listings.");
 		}
 	}
@@ -316,11 +388,17 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 		for (Property p : shown) {
 			ImageIcon thumbnail = null;
 			if (!p.getPhotos().isEmpty()) {
-				thumbnail = p.getPhotos().get(0).loadImage(76, 52);
+				thumbnail = p.getPhotos().get(0).loadImage(126, 72);
 			}
-			tableModel.addRow(new Object[] { thumbnail, "P" + String.format("%03d", p.getPropertyId()), p.getTitle(),
-					p.getPropertyType(), p.getSubtype(), p.getLocation(), BaseService.peso(p.getPrice()),
-					String.format("%,.0f sqm", p.getLotArea()), ReportGenerator.titleCase(p.getStatus()) });
+			String id = "P" + String.format("%03d", p.getPropertyId());
+			String caption = p.getDeveloper() == null || p.getDeveloper().trim().isEmpty() ? p.getPropertyType()
+					: p.getDeveloper();
+			// one row = one card: photo | title | location and price | type and area | status
+			tableModel.addRow(new Object[] { thumbnail, new String[] { p.getTitle(), caption, id },
+					new String[] { p.getLocation(), "Location", BaseService.peso(p.getPrice()), "Price" },
+					new String[] { p.getSubtype(), p.getPropertyType(), String.format("%,.0f sqm", p.getLotArea()),
+							"Lot area" },
+					ReportGenerator.titleCase(p.getStatus()) });
 		}
 		lblResult.setText("Showing " + service.getMessage() + (browseMode ? " (available only)" : "")
 				+ ". Double-click a property to see its photos.");

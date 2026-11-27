@@ -108,24 +108,24 @@ public class AgentPanel extends JPanel implements DashboardSection {
 		pnlCards.setLayout(new GridLayout(1, 4, 14, 0));
 
 		cardListings = new StatCard();
-		cardListings.setIcon("⌂");
+		cardListings.setIconType(NavIcon.PROPERTIES);
 		cardListings.setTitle("My Listings");
 		pnlCards.add(cardListings);
 
 		cardClients = new StatCard();
-		cardClients.setIcon("●");
+		cardClients.setIconType(NavIcon.CLIENTS);
 		cardClients.setTitle("My Clients");
 		cardClients.setNote("registered buyers");
 		pnlCards.add(cardClients);
 
 		cardViewings = new StatCard();
-		cardViewings.setIcon("■");
+		cardViewings.setIconType(NavIcon.VIEWING);
 		cardViewings.setTitle("Upcoming Viewings");
 		cardViewings.setNote("scheduled from today");
 		pnlCards.add(cardViewings);
 
 		cardDeals = new StatCard();
-		cardDeals.setIcon("₱");
+		cardDeals.setIconType(NavIcon.DEALS);
 		cardDeals.setTitle("Completed Deals");
 		pnlCards.add(cardDeals);
 

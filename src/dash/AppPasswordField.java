@@ -14,7 +14,7 @@ public class AppPasswordField extends JPasswordField {
 		setBackground(Theme.FIELD);
 		setForeground(Theme.WHITE);
 		setCaretColor(Theme.GOLD);
-		setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Theme.LINE),
-				new EmptyBorder(6, 8, 6, 8)));
+		setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Theme.CARD_BORDER),
+				new EmptyBorder(6, 10, 6, 10)));
 	}
 }

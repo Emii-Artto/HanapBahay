@@ -36,24 +36,24 @@ public class AdminOverviewPanel extends JPanel implements DashboardSection {
 		pnlCards.setLayout(new GridLayout(1, 4, 14, 0));
 
 		cardListings = new StatCard();
-		cardListings.setIcon("⌂");
+		cardListings.setIconType(NavIcon.PROPERTIES);
 		cardListings.setTitle("Total Listings");
 		pnlCards.add(cardListings);
 
 		cardClients = new StatCard();
-		cardClients.setIcon("●");
+		cardClients.setIconType(NavIcon.CLIENTS);
 		cardClients.setTitle("Registered Clients");
 		cardClients.setNote("all agents");
 		pnlCards.add(cardClients);
 
 		cardViewings = new StatCard();
-		cardViewings.setIcon("■");
+		cardViewings.setIconType(NavIcon.VIEWING);
 		cardViewings.setTitle("Upcoming Viewings");
 		cardViewings.setNote("scheduled from today");
 		pnlCards.add(cardViewings);
 
 		cardDeals = new StatCard();
-		cardDeals.setIcon("₱");
+		cardDeals.setIconType(NavIcon.DEALS);
 		cardDeals.setTitle("Completed Deals");
 		pnlCards.add(cardDeals);
 

@@ -3,8 +3,10 @@ package dash;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -42,7 +44,7 @@ public class MainDashboard extends JFrame {
 	private JLabel lblAgentName;
 	private JLabel lblAgentRole;
 	private AppButton btnClientMode;
-	private AppButton[] navButtons;
+	private NavButton[] navButtons;
 	private String[] sectionNames = { "Agent", "Properties", "Clients", "Viewing", "Deals", "Reports" };
 
 	private AgentPanel agentPanel;
@@ -74,124 +76,135 @@ public class MainDashboard extends JFrame {
 		pnlSidebar = new JPanel();
 		pnlSidebar.setBackground(Theme.PANEL);
 		pnlSidebar.setPreferredSize(new Dimension(240, 10));
-		pnlSidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Theme.GOLD));
+		pnlSidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Theme.LINE));
 		contentPane.add(pnlSidebar, BorderLayout.WEST);
 		pnlSidebar.setLayout(new BorderLayout(0, 0));
 
 		JPanel pnlNav = new JPanel();
 		pnlNav.setOpaque(false);
-		pnlNav.setPreferredSize(new Dimension(240, 420));
+		pnlNav.setPreferredSize(new Dimension(240, 410));
 		pnlSidebar.add(pnlNav, BorderLayout.NORTH);
 		pnlNav.setLayout(null);
 
-		JLabel lblLogo = new JLabel("⌂ HanapBahay");
-		lblLogo.setFont(new Font("Arial", Font.BOLD, 24));
+		JLabel lblLogo = new JLabel("HanapBahay");
+		lblLogo.setIcon(new NavIcon(NavIcon.PROPERTIES, 26, Theme.GOLD));
+		lblLogo.setIconTextGap(10);
+		lblLogo.setFont(new Font("Segoe UI", Font.BOLD, 21));
 		lblLogo.setForeground(Theme.GOLD);
-		lblLogo.setBounds(18, 24, 210, 32);
+		lblLogo.setBounds(18, 22, 210, 34);
 		pnlNav.add(lblLogo);
 
 		JLabel lblSystem = new JLabel("REAL ESTATE SYSTEM");
 		lblSystem.setFont(Theme.SMALL);
 		lblSystem.setForeground(Theme.MUTED);
-		lblSystem.setBounds(20, 58, 200, 16);
+		lblSystem.setBounds(54, 54, 170, 16);
 		pnlNav.add(lblSystem);
 
-		AppButton btnAgent = new AppButton("   Agent", Theme.PANEL);
-		btnAgent.setHorizontalAlignment(SwingConstants.LEFT);
+		JLabel lblMenu = new JLabel("MENU");
+		lblMenu.setFont(Theme.SMALL_BOLD);
+		lblMenu.setForeground(Theme.MUTED);
+		lblMenu.setBounds(20, 92, 200, 16);
+		pnlNav.add(lblMenu);
+
+		NavButton btnAgent = new NavButton("Agent", NavIcon.AGENT);
 		btnAgent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openSection("Agent");
 			}
 		});
-		btnAgent.setBounds(14, 100, 212, 44);
+		btnAgent.setBounds(12, 114, 216, 40);
 		pnlNav.add(btnAgent);
 
-		AppButton btnProperties = new AppButton("   Properties", Theme.PANEL);
-		btnProperties.setHorizontalAlignment(SwingConstants.LEFT);
+		NavButton btnProperties = new NavButton("Properties", NavIcon.PROPERTIES);
 		btnProperties.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openSection("Properties");
 			}
 		});
-		btnProperties.setBounds(14, 150, 212, 44);
+		btnProperties.setBounds(12, 160, 216, 40);
 		pnlNav.add(btnProperties);
 
-		AppButton btnClients = new AppButton("   Clients", Theme.PANEL);
-		btnClients.setHorizontalAlignment(SwingConstants.LEFT);
+		NavButton btnClients = new NavButton("Clients", NavIcon.CLIENTS);
 		btnClients.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openSection("Clients");
 			}
 		});
-		btnClients.setBounds(14, 200, 212, 44);
+		btnClients.setBounds(12, 206, 216, 40);
 		pnlNav.add(btnClients);
 
-		AppButton btnViewing = new AppButton("   Viewing", Theme.PANEL);
-		btnViewing.setHorizontalAlignment(SwingConstants.LEFT);
+		NavButton btnViewing = new NavButton("Viewing", NavIcon.VIEWING);
 		btnViewing.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openSection("Viewing");
 			}
 		});
-		btnViewing.setBounds(14, 250, 212, 44);
+		btnViewing.setBounds(12, 252, 216, 40);
 		pnlNav.add(btnViewing);
 
-		AppButton btnDeals = new AppButton("   Deals", Theme.PANEL);
-		btnDeals.setHorizontalAlignment(SwingConstants.LEFT);
+		NavButton btnDeals = new NavButton("Deals", NavIcon.DEALS);
 		btnDeals.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openSection("Deals");
 			}
 		});
-		btnDeals.setBounds(14, 300, 212, 44);
+		btnDeals.setBounds(12, 298, 216, 40);
 		pnlNav.add(btnDeals);
 
-		AppButton btnReports = new AppButton("   Reports", Theme.PANEL);
-		btnReports.setHorizontalAlignment(SwingConstants.LEFT);
+		NavButton btnReports = new NavButton("Reports", NavIcon.REPORTS);
 		btnReports.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openSection("Reports");
 			}
 		});
-		btnReports.setBounds(14, 350, 212, 44);
+		btnReports.setBounds(12, 344, 216, 40);
 		pnlNav.add(btnReports);
 
-		navButtons = new AppButton[] { btnAgent, btnProperties, btnClients, btnViewing, btnDeals, btnReports };
+		navButtons = new NavButton[] { btnAgent, btnProperties, btnClients, btnViewing, btnDeals, btnReports };
 
 		JPanel pnlProfile = new JPanel();
 		pnlProfile.setOpaque(false);
-		pnlProfile.setPreferredSize(new Dimension(240, 170));
+		pnlProfile.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Theme.LINE));
+		pnlProfile.setPreferredSize(new Dimension(240, 172));
 		pnlSidebar.add(pnlProfile, BorderLayout.SOUTH);
 		pnlProfile.setLayout(null);
 
 		lblAgentName = new JLabel("● Agent Profile");
 		lblAgentName.setFont(Theme.BODY_BOLD);
 		lblAgentName.setForeground(Theme.GOLD);
-		lblAgentName.setBounds(18, 10, 210, 20);
+		lblAgentName.setBounds(18, 16, 210, 20);
 		pnlProfile.add(lblAgentName);
 
 		lblAgentRole = new JLabel("Real Estate Agent");
 		lblAgentRole.setFont(Theme.SMALL);
 		lblAgentRole.setForeground(Theme.MUTED);
-		lblAgentRole.setBounds(32, 32, 190, 16);
+		lblAgentRole.setBounds(32, 37, 190, 16);
 		pnlProfile.add(lblAgentRole);
 
-		AppButton btnChangePassword = new AppButton("Change Password", Theme.GRAY);
+		AppButton btnChangePassword = new AppButton("Change Password", Theme.PANEL);
+		btnChangePassword.setIcon(new NavIcon(NavIcon.KEY));
+		btnChangePassword.setHorizontalAlignment(SwingConstants.LEFT);
+		btnChangePassword.setForeground(Theme.MUTED);
+		btnChangePassword.setOutline(Theme.CARD_BORDER);
 		btnChangePassword.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				changePassword();
 			}
 		});
-		btnChangePassword.setBounds(14, 60, 212, 36);
+		btnChangePassword.setBounds(12, 66, 216, 38);
 		pnlProfile.add(btnChangePassword);
 
-		AppButton btnLogout = new AppButton("Log Out");
+		AppButton btnLogout = new AppButton("Log Out", Theme.PANEL);
+		btnLogout.setIcon(new NavIcon(NavIcon.LOGOUT));
+		btnLogout.setHorizontalAlignment(SwingConstants.LEFT);
+		btnLogout.setForeground(Theme.RED);
+		btnLogout.setOutline(Theme.CARD_BORDER);
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				logout();
 			}
 		});
-		btnLogout.setBounds(14, 104, 212, 42);
+		btnLogout.setBounds(12, 112, 216, 38);
 		pnlProfile.add(btnLogout);
 
 		// ================= MAIN AREA =================
@@ -203,24 +216,29 @@ public class MainDashboard extends JFrame {
 		JPanel pnlTopBar = new JPanel();
 		pnlTopBar.setBackground(Theme.DARK);
 		pnlTopBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Theme.LINE),
-				new EmptyBorder(12, 24, 12, 20)));
+				new EmptyBorder(14, 28, 14, 24)));
 		pnlMain.add(pnlTopBar, BorderLayout.NORTH);
 		pnlTopBar.setLayout(new BorderLayout(0, 0));
+
+		JPanel pnlTitle = new JPanel();
+		pnlTitle.setOpaque(false);
+		pnlTopBar.add(pnlTitle, BorderLayout.WEST);
+		pnlTitle.setLayout(new GridLayout(2, 1, 0, 0));
 
 		lblPageTitle = new JLabel("Agent");
 		lblPageTitle.setFont(Theme.TITLE);
 		lblPageTitle.setForeground(Theme.WHITE);
-		pnlTopBar.add(lblPageTitle, BorderLayout.WEST);
+		pnlTitle.add(lblPageTitle);
+
+		JLabel lblSlogan = new JLabel("Build more dreams. Sell more homes.");
+		lblSlogan.setFont(Theme.SMALL);
+		lblSlogan.setForeground(Theme.MUTED);
+		pnlTitle.add(lblSlogan);
 
 		JPanel pnlTopRight = new JPanel();
 		pnlTopRight.setOpaque(false);
 		pnlTopBar.add(pnlTopRight, BorderLayout.EAST);
-		pnlTopRight.setLayout(new FlowLayout(FlowLayout.RIGHT, 14, 0));
-
-		JLabel lblSlogan = new JLabel("Build more dreams. Sell more homes.");
-		lblSlogan.setFont(new Font("Arial", Font.ITALIC, 14));
-		lblSlogan.setForeground(Theme.MUTED);
-		pnlTopRight.add(lblSlogan);
+		pnlTopRight.setLayout(new GridBagLayout()); // keeps the button centered vertically
 
 		btnClientMode = new AppButton("● Start Client Browse Mode");
 		btnClientMode.addActionListener(new ActionListener() {
@@ -232,7 +250,7 @@ public class MainDashboard extends JFrame {
 				}
 			}
 		});
-		pnlTopRight.add(btnClientMode);
+		pnlTopRight.add(btnClientMode, new GridBagConstraints());
 
 		pnlContent = new JPanel();
 		pnlContent.setBackground(Theme.DARK);
@@ -283,8 +301,7 @@ public class MainDashboard extends JFrame {
 	private void openSection(String name) {
 		for (int i = 0; i < sectionNames.length; i++) {
 			boolean active = sectionNames[i].equals(name);
-			navButtons[i].setBackground(active ? Theme.ACTIVE : Theme.PANEL);
-			navButtons[i].setForeground(active ? Theme.GOLD_LIGHT : Theme.WHITE);
+			navButtons[i].setActive(active); // gold text and gold bar on the page being shown
 			if (active) {
 				sections[i].refresh(); // POLYMORPHISM: runs that panel's own refresh()
 				lblPageTitle.setText(sections[i].getPageTitle());
