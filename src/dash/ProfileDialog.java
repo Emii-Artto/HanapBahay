@@ -7,9 +7,9 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Agent;
-import com.hanapbahay.service.UserService;
+import hanapbahay.AppContext;
+import model.Agent;
+import service.UserService;
 
 /** Edit the logged-in agent's own profile. */
 public class ProfileDialog extends JDialog {

@@ -16,10 +16,10 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Agent;
-import com.hanapbahay.service.Report;
-import com.hanapbahay.service.ReportGenerator;
+import hanapbahay.AppContext;
+import model.Agent;
+import service.Report;
+import service.ReportGenerator;
 
 /**
  * 3.1.8 Report Generation / 5.5 Reports: choose a report, see it in a table, print it,

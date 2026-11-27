@@ -12,10 +12,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Property;
-import com.hanapbahay.service.PropertyService;
-import com.hanapbahay.service.ReportGenerator;
+import hanapbahay.AppContext;
+import model.Property;
+import service.PropertyService;
+import service.ReportGenerator;
 
 /**
  * The Add / Edit Property form (3.1.1 and 3.1.2), with a file chooser for up to 4 photos.

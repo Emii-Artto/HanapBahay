@@ -8,9 +8,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.User;
-import com.hanapbahay.service.UserService;
+import hanapbahay.AppContext;
+import model.User;
+import service.UserService;
 
 /**
  * Change My Password, for every account.

@@ -12,12 +12,12 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Client;
-import com.hanapbahay.model.Deal;
-import com.hanapbahay.model.PaymentMethod;
-import com.hanapbahay.model.Property;
-import com.hanapbahay.service.DealService;
+import hanapbahay.AppContext;
+import model.Client;
+import model.Deal;
+import model.PaymentMethod;
+import model.Property;
+import service.DealService;
 
 /**
  * Record a deal: buyer, property, payment method, agreed price, date and status (3.1.5).

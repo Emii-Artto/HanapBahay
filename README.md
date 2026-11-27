@@ -2,7 +2,7 @@
 
 **A Real Estate Listing, Inquiry, and Sales Monitoring System** — Java Swing (Eclipse WindowBuilder) + MySQL (XAMPP).
 Built from the group's project proposal (BSIT-2103, Group 4: Guce, Mañibo, Vergara) and the OOP project matrix,
-on top of the `real-main2` code (UI member's dark-and-gold design, `dao.mysql` classes, `AppContext`, services).
+on top of the `real-main2` code (UI member's dark-and-gold design, `mysql` classes, `AppContext`, services).
 
 ## Who uses the system
 
@@ -45,12 +45,13 @@ dash/           MainDashboard (agents), AdminDashboard (Owner/Admin)        (JFr
                 DealFormDialog, ProfileDialog, UserFormDialog, ChangePasswordDialog,
                 PhotoGalleryDialog, MatchesDialog                           (JDialogs)
                 AppButton, AppTable, StatCard, HeroBanner, ... Theme        (reusable styled components)
-com.hanapbahay.service   UserService, PropertyService, ClientService, ViewingService,
-                         DealService, ReportGenerator, Report                (rules, validation, messages)
-com.hanapbahay.dao       CrudDAO (interface), UserDao, PropertyDao, ClientDao, ViewingDao, DealDao, DBConnection
-com.hanapbahay.dao.mysql MySqlUserDao, MySqlPropertyDao, MySqlClientDao, MySqlViewingDao, MySqlDealDao
-com.hanapbahay.model     Person -> Agent, Client;  Property -> HouseAndLot, VacantLot, Condominium;
-                         User, PropertyPhoto, Viewing, PaymentMethod, Deal
+hanapbahay/     Main (starts the app), AppContext (connects the layers)
+service/        UserService, PropertyService, ClientService, ViewingService,
+                DealService, ReportGenerator, Report                        (rules, validation, messages)
+dao/            CrudDAO (interface), UserDao, PropertyDao, ClientDao, ViewingDao, DealDao, DBConnection
+mysql/          MySqlUserDao, MySqlPropertyDao, MySqlClientDao, MySqlViewingDao, MySqlDealDao (SQL)
+model/          Person -> Agent, Client;  Property -> HouseAndLot, VacantLot, Condominium;
+                User, PropertyPhoto, Viewing, PaymentMethod, Deal
 ```
 
 - **WindowBuilder:** every screen builds its components in a no-argument constructor (absolute layout in forms,
@@ -58,7 +59,7 @@ com.hanapbahay.model     Person -> Agent, Client;  Property -> HouseAndLot, Vaca
   **Open With → WindowBuilder Editor** → **Design** tab. Data is loaded only after login (`startSession`, `setAgent`,
   `refresh`), so the designer opens without the database.
 - The screens never write SQL. They call a service through `AppContext`; the service checks the input and calls a DAO
-  interface; the `dao.mysql` class runs the SQL with `PreparedStatement` (`?` placeholders block SQL injection).
+  interface; the `mysql` class runs the SQL with `PreparedStatement` (`?` placeholders block SQL injection).
 
 ## Four pillars of OOP (paper section IV / matrix B1–B4)
 
@@ -85,7 +86,7 @@ changing a password needs the current one, and the new one must be different · 
 2. Start **MySQL** (and Apache) in the **XAMPP Control Panel**.
 3. Open **http://localhost/phpmyadmin** → **Import** → choose `db/schema.sql` → **Import**.
    This **replaces** the old `hanapbahay` database with the paper's tables.
-4. Run `src/com/hanapbahay/Main.java` (**Run As → Java Application**).
+4. Run `src/hanapbahay/Main.java` (**Run As → Java Application**).
 
 Test logins (choose the matching **Account type**):
 

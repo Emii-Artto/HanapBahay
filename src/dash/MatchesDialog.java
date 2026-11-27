@@ -9,11 +9,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Client;
-import com.hanapbahay.model.Property;
-import com.hanapbahay.service.BaseService;
-import com.hanapbahay.service.ClientService;
+import hanapbahay.AppContext;
+import model.Client;
+import model.Property;
+import service.BaseService;
+import service.ClientService;
 
 /**
  * 5.4.6 Find Matches: the available properties that fit the selected client's budget,

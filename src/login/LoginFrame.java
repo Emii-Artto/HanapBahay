@@ -19,10 +19,10 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Agent;
-import com.hanapbahay.model.User;
-import com.hanapbahay.service.UserService;
+import hanapbahay.AppContext;
+import model.Agent;
+import model.User;
+import service.UserService;
 
 import dash.AdminDashboard;
 import dash.AppButton;

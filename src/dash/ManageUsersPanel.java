@@ -12,10 +12,10 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Agent;
-import com.hanapbahay.model.User;
-import com.hanapbahay.service.UserService;
+import hanapbahay.AppContext;
+import model.Agent;
+import model.User;
+import service.UserService;
 
 /**
  * 3.1.9 User Account Management (Owner and Admins).

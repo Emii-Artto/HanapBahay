@@ -12,11 +12,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Agent;
-import com.hanapbahay.model.Client;
-import com.hanapbahay.service.BaseService;
-import com.hanapbahay.service.ClientService;
+import hanapbahay.AppContext;
+import model.Agent;
+import model.Client;
+import service.BaseService;
+import service.ClientService;
 
 /**
  * 3.1.3 Client Management: register and manage buyers, search by name or contact

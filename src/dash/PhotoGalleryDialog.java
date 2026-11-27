@@ -13,10 +13,10 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.hanapbahay.model.Property;
-import com.hanapbahay.model.PropertyPhoto;
-import com.hanapbahay.service.BaseService;
-import com.hanapbahay.service.ReportGenerator;
+import model.Property;
+import model.PropertyPhoto;
+import service.BaseService;
+import service.ReportGenerator;
 
 /**
  * The photo gallery with the property details (3.1.2 / 3.2.2). Used in Agent Mode and

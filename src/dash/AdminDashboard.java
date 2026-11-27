@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.hanapbahay.model.User;
+import model.User;
 
 import login.LoginFrame;
 

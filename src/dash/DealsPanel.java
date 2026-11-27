@@ -12,15 +12,15 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Agent;
-import com.hanapbahay.model.Client;
-import com.hanapbahay.model.Deal;
-import com.hanapbahay.model.PaymentMethod;
-import com.hanapbahay.model.Property;
-import com.hanapbahay.service.BaseService;
-import com.hanapbahay.service.DealService;
-import com.hanapbahay.service.ReportGenerator;
+import hanapbahay.AppContext;
+import model.Agent;
+import model.Client;
+import model.Deal;
+import model.PaymentMethod;
+import model.Property;
+import service.BaseService;
+import service.DealService;
+import service.ReportGenerator;
 
 /**
  * 3.1.5 Deal and Payment Recording. A Pending deal makes the property Reserved,

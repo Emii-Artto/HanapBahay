@@ -8,12 +8,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Agent;
-import com.hanapbahay.model.Property;
-import com.hanapbahay.service.BaseService;
-import com.hanapbahay.service.Report;
-import com.hanapbahay.service.ReportGenerator;
+import hanapbahay.AppContext;
+import model.Agent;
+import model.Property;
+import service.BaseService;
+import service.Report;
+import service.ReportGenerator;
 
 /** The Admin's overview: totals for all agents and the Agent Performance table. */
 public class AdminOverviewPanel extends JPanel implements DashboardSection {

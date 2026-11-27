@@ -12,10 +12,10 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Client;
-import com.hanapbahay.model.Property;
-import com.hanapbahay.service.ViewingService;
+import hanapbahay.AppContext;
+import model.Client;
+import model.Property;
+import service.ViewingService;
 
 /**
  * Schedule a viewing: choose the client, the property, the date and the time (3.1.4).

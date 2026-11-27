@@ -12,13 +12,13 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Agent;
-import com.hanapbahay.model.Client;
-import com.hanapbahay.model.Property;
-import com.hanapbahay.model.Viewing;
-import com.hanapbahay.service.ReportGenerator;
-import com.hanapbahay.service.ViewingService;
+import hanapbahay.AppContext;
+import model.Agent;
+import model.Client;
+import model.Property;
+import model.Viewing;
+import service.ReportGenerator;
+import service.ViewingService;
 
 /**
  * 3.1.4 Viewing Appointment Scheduling: schedule visits and mark them Completed or

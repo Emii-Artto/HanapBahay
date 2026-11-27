@@ -19,8 +19,8 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.hanapbahay.model.Agent;
-import com.hanapbahay.model.User;
+import model.Agent;
+import model.User;
 
 import login.LoginFrame;
 

@@ -8,10 +8,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Client;
-import com.hanapbahay.model.Property;
-import com.hanapbahay.service.ClientService;
+import hanapbahay.AppContext;
+import model.Client;
+import model.Property;
+import service.ClientService;
 
 /**
  * The Add / Edit Client form. ClientService checks the name, contact number, email and budget.

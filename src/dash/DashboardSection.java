@@ -1,6 +1,6 @@
 package dash;
 
-import com.hanapbahay.model.Agent;
+import model.Agent;
 
 /**
  * INTERFACE for the six sections of the main window (Agent, Properties, Clients,

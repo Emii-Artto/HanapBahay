@@ -18,14 +18,17 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.border.EmptyBorder;
 
-import com.hanapbahay.AppContext;
-import com.hanapbahay.model.Agent;
-import com.hanapbahay.model.Property;
-import com.hanapbahay.service.BaseService;
-import com.hanapbahay.service.PropertyService;
-import com.hanapbahay.service.ReportGenerator;
+import hanapbahay.AppContext;
+import model.Agent;
+import model.Property;
+import service.BaseService;
+import service.PropertyService;
+import service.ReportGenerator;
 
 /**
  * 3.1.1 Property Listing Management and 3.2.2 Property Search & Gallery Views
@@ -49,6 +52,8 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 	private StatCard cardViewings;
 	private StatCard cardDeals;
 	private AppTextField txtKeyword;
+	private SuggestionBox keywordSuggestions;
+	private Timer searchTimer; // waits until the user stops typing, then searches
 	private AppComboBox<String> cboType;
 	private AppComboBox<String> cboSubtype;
 	private AppTextField txtLocation;
@@ -151,7 +156,13 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 
 		txtKeyword = new AppTextField();
 		txtKeyword.setPlaceholder("Search title or location");
+		txtKeyword.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				refresh(); // pressing Enter (or choosing a suggestion) searches
+			}
+		});
 		pnlFields1.add(txtKeyword);
+		keywordSuggestions = new SuggestionBox(txtKeyword); // drop-down of titles and locations
 
 		cboType = new AppComboBox<String>();
 		cboType.addItem(PropertyService.ALL);
@@ -172,6 +183,30 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 		txtLocation = new AppTextField();
 		txtLocation.setPlaceholder("Any location");
 		pnlFields1.add(txtLocation);
+
+		// search while typing: when the user stops typing in Keyword or Location for 0.3 seconds,
+		// the list is searched again (the same refresh() as the Search button)
+		searchTimer = new Timer(300, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				refresh();
+			}
+		});
+		searchTimer.setRepeats(false);
+		DocumentListener searchWhileTyping = new DocumentListener() {
+			public void insertUpdate(DocumentEvent e) {
+				searchTimer.restart();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				searchTimer.restart();
+			}
+
+			public void changedUpdate(DocumentEvent e) {
+				searchTimer.restart();
+			}
+		};
+		txtKeyword.getDocument().addDocumentListener(searchWhileTyping);
+		txtLocation.getDocument().addDocumentListener(searchWhileTyping);
 
 		JPanel pnlCaptions2 = new JPanel();
 		pnlCaptions2.setOpaque(false);
@@ -402,6 +437,16 @@ public class PropertiesPanel extends JPanel implements DashboardSection {
 		}
 		lblResult.setText("Showing " + service.getMessage() + (browseMode ? " (available only)" : "")
 				+ ". Double-click a property to see its photos.");
+
+		// suggestions for the Keyword box: the titles and locations of the agent's listings
+		// (in Client Browse Mode only the Available ones, so the buyer sees nothing else)
+		keywordSuggestions.clear();
+		for (Property p : AppContext.reportGenerator().getProperties(agentId())) {
+			if (!browseMode || p.isAvailable()) {
+				keywordSuggestions.add(p.getTitle(), "Title");
+				keywordSuggestions.add(p.getLocation(), "Location");
+			}
+		}
 
 		if (!browseMode) {
 			ReportGenerator reports = AppContext.reportGenerator();
